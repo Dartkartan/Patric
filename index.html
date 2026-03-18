@@ -503,9 +503,57 @@
       .btn-locate { bottom: 130px; right: 0.8rem; width: 42px; height: 42px; font-size: 1.1rem; }
 
       /* Scorer mobile */
-      .dart-num { font-size: 1.1rem; padding: 10px 2px; }
-      .multi-tab { font-size: 0.75rem; padding: 8px 2px 4px; }
-      .dart-slot { min-width: 50px; font-size: 0.85rem; padding: 3px 6px; }
+      .dart-num { font-size: 1.1rem; padding: 8px 2px; }
+      .multi-tab { font-size: 0.72rem; padding: 6px 2px 3px; }
+      .dart-slot { min-width: 44px; font-size: 0.8rem; padding: 2px 5px; }
+
+      /* Scorer game: fixed layout, no scroll */
+      #scorerOverlay {
+        display: flex !important;
+        flex-direction: column;
+      }
+      #scorerOverlay[style*="display: block"] {
+        display: flex !important;
+      }
+      #scorerModal {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        padding: 0.5rem 0.5rem 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      #scorerGame {
+        display: flex !important;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+      }
+      #scorerGame > div:first-child { padding: 0 0.3rem; }
+
+      /* Compact player cards on mobile */
+      .mobile-scoreboard {
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+        flex-shrink: 0;
+      }
+      .mobile-scoreboard > div {
+        flex: 1;
+        min-width: 0;
+      }
+      .player-card { padding: 0.4rem 0.6rem; }
+      .player-score { font-size: 1.8rem; }
+      .player-name-label { font-size: 0.78rem; }
+      .player-avg { font-size: 0.65rem; }
+
+      /* Input section fills remaining space */
+      #scorerGame > div:last-child {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
     }
 
     /* SCORER */
@@ -1828,50 +1876,85 @@ function startGame() {
   document.getElementById('bustMsg').textContent = '';
 }
 
-function renderScoreboard() {
-  const sb = document.getElementById('scoreboard');
-  sb.innerHTML = scorerPlayers.map((p, i) => {
-    const isActive = i === scorerCurrent;
-    // Checkout baserat på kvarvarande poäng minus pågående tur
-    const liveScore = isActive ? p.score - turnDarts.reduce((s,d) => s+d.val, 0) : p.score;
-    const dartsLeft = isActive ? 3 - turnDarts.length : 3;
-    let co = (outRule === 'dubbel') ? CHECKOUTS[liveScore] : null;
-    // Filter checkout to fit remaining darts
-    if (co && dartsLeft < co.split(' ').length) {
-      // Try to find a checkout that fits in remaining darts
-      co = null;
-      if (dartsLeft === 1) {
-        // Only doubles work (2,4,6,...,40,50)
-        if (liveScore === 50) co = 'Bull';
-        else if (liveScore <= 40 && liveScore % 2 === 0) co = 'D' + (liveScore/2);
-      } else if (dartsLeft === 2) {
-        // Find 2-dart checkout from table or build one
-        const twoCheck = CHECKOUTS[liveScore];
-        if (twoCheck && twoCheck.split(' ').length <= 2) co = twoCheck;
-        else {
-          // Try single + double combos
-          for (let s = 1; s <= 20; s++) {
-            const rem = liveScore - s;
-            if (rem === 50) { co = 'S'+s+' Bull'; break; }
-            if (rem > 0 && rem <= 40 && rem % 2 === 0) { co = 'S'+s+' D'+(rem/2); break; }
-          }
-          if (!co) {
-            for (let d = 1; d <= 20; d++) {
-              const rem = liveScore - d*2;
-              if (rem === 50) { co = 'D'+d+' Bull'; break; }
-              if (rem > 0 && rem <= 40 && rem % 2 === 0) { co = 'D'+d+' D'+(rem/2); break; }
-            }
-          }
-          if (!co) {
-            for (let t = 1; t <= 20; t++) {
-              const rem = liveScore - t*3;
-              if (rem === 50) { co = 'T'+t+' Bull'; break; }
-              if (rem > 0 && rem <= 40 && rem % 2 === 0) { co = 'T'+t+' D'+(rem/2); break; }
-            }
-          }
+function getCheckout(liveScore, dartsLeft) {
+  let co = (outRule === 'dubbel') ? CHECKOUTS[liveScore] : null;
+  if (co && dartsLeft < co.split(' ').length) {
+    co = null;
+    if (dartsLeft === 1) {
+      if (liveScore === 50) co = 'Bull';
+      else if (liveScore <= 40 && liveScore % 2 === 0) co = 'D' + (liveScore/2);
+    } else if (dartsLeft === 2) {
+      const twoCheck = CHECKOUTS[liveScore];
+      if (twoCheck && twoCheck.split(' ').length <= 2) co = twoCheck;
+      else {
+        for (let s = 1; s <= 20; s++) {
+          const rem = liveScore - s;
+          if (rem === 50) { co = 'S'+s+' Bull'; break; }
+          if (rem > 0 && rem <= 40 && rem % 2 === 0) { co = 'S'+s+' D'+(rem/2); break; }
+        }
+        if (!co) for (let d = 1; d <= 20; d++) {
+          const rem = liveScore - d*2;
+          if (rem === 50) { co = 'D'+d+' Bull'; break; }
+          if (rem > 0 && rem <= 40 && rem % 2 === 0) { co = 'D'+d+' D'+(rem/2); break; }
+        }
+        if (!co) for (let t = 1; t <= 20; t++) {
+          const rem = liveScore - t*3;
+          if (rem === 50) { co = 'T'+t+' Bull'; break; }
+          if (rem > 0 && rem <= 40 && rem % 2 === 0) { co = 'T'+t+' D'+(rem/2); break; }
         }
       }
     }
+  }
+  return co;
+}
+
+const isMobile = () => window.innerWidth <= 700;
+
+function renderScoreboard() {
+  const sb = document.getElementById('scoreboard');
+  const mobile = isMobile();
+
+  sb.innerHTML = mobile ? renderScoreboardMobile() : renderScoreboardDesktop();
+}
+
+function renderScoreboardMobile() {
+  return `<div style="display:flex;gap:4px;margin-bottom:0.3rem">${scorerPlayers.map((p, i) => {
+    const isActive = i === scorerCurrent;
+    const liveScore = isActive ? p.score - turnDarts.reduce((s,d) => s+d.val, 0) : p.score;
+    const dartsLeft = isActive ? 3 - turnDarts.length : 3;
+    const co = getCheckout(liveScore, dartsLeft);
+    const coTags = co ? co.split(' ').map(t =>
+      `<span style="background:rgba(232,255,71,0.15);color:var(--accent);border:1px solid rgba(232,255,71,0.3);border-radius:4px;padding:1px 5px;font-size:0.65rem;font-weight:700">${t}</span>`
+    ).join(' ') : '';
+    const avg = p.throws > 0 ? (p.totalScore / p.throws).toFixed(0) : '–';
+
+    return `<div style="flex:1;background:${isActive ? 'rgba(232,255,71,0.04)' : 'var(--surface2)'};
+      border:2px solid ${isActive ? 'var(--accent)' : 'var(--border)'};
+      border-radius:10px;padding:0.4rem 0.5rem;min-width:0">
+      <div style="font-size:0.68rem;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+        ${isActive ? '▶ ' : ''}${p.name.toUpperCase()}
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:${isActive ? 'var(--text)' : 'var(--muted)'}">${isActive ? liveScore : p.score}</div>
+        <div style="text-align:right">
+          ${getSetsToWin() > 1 ? `<span style="font-size:0.6rem;color:var(--muted)">S${p.sets}</span> ` : ''}
+          ${bestOfLegs > 1 || scorerPlayers.length > 1 ? `<span style="font-size:0.6rem;color:var(--muted)">L${p.legs}</span>` : ''}
+        </div>
+      </div>
+      ${co && isActive ? `<div style="display:flex;gap:2px;flex-wrap:wrap;margin-top:3px">${coTags}</div>` : ''}
+      <div style="display:flex;gap:0.5rem;margin-top:3px;font-size:0.6rem;color:var(--muted)">
+        <span>Snitt ${avg}</span><span>·</span><span>${p.throws*3}p</span>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderScoreboardDesktop() {
+  return scorerPlayers.map((p, i) => {
+    const isActive = i === scorerCurrent;
+    const liveScore = isActive ? p.score - turnDarts.reduce((s,d) => s+d.val, 0) : p.score;
+    const dartsLeft = isActive ? 3 - turnDarts.length : 3;
+    const co = getCheckout(liveScore, dartsLeft);
     const avg = p.throws > 0 ? (p.totalScore / p.throws).toFixed(2) : '–';
     const last = p.lastScore !== undefined ? p.lastScore : '–';
     const coTags = co ? co.split(' ').map(t =>
