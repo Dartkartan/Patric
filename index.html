@@ -1,0 +1,2168 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dartkartan – Hitta närmsta darthak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --surface: #16161a;
+      --surface2: #1e1e24;
+      --accent: #e8ff47;
+      --accent2: #ff4757;
+      --text: #f0f0f0;
+      --muted: #888;
+      --border: rgba(255,255,255,0.07);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(13,13,15,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      position: relative;
+    }
+
+    .logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+    }
+
+    .logo-text span {
+      color: var(--text);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-add {
+      background: var(--accent);
+      color: #0d0d0f;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-add:hover { opacity: 0.85; }
+
+    /* LAYOUT */
+    .app {
+      display: flex;
+      height: 100vh;
+      padding-top: 64px;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 360px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-top {
+      padding: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 16px 10px 40px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+    .search-input::placeholder { color: var(--muted); }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .filter-chip.active, .filter-chip:hover {
+      background: var(--accent);
+      color: #0d0d0f;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .results-label {
+      padding: 0.75rem 1.25rem 0.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .bar-list {
+      overflow-y: auto;
+      flex: 1;
+      padding: 0 0.75rem 1rem;
+    }
+    .bar-list::-webkit-scrollbar { width: 4px; }
+    .bar-list::-webkit-scrollbar-track { background: transparent; }
+    .bar-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .bar-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .bar-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--accent);
+      transform: scaleY(0);
+      transition: transform 0.2s;
+    }
+    .bar-card:hover, .bar-card.active {
+      border-color: rgba(232,255,71,0.3);
+      transform: translateX(2px);
+    }
+    .bar-card:hover::before, .bar-card.active::before {
+      transform: scaleY(1);
+    }
+
+    .bar-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .bar-city {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .bar-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 0.75rem;
+    }
+    .badge.price { color: var(--accent); }
+    .badge.boards { color: #7dd3fc; }
+    .badge.open { color: #4ade80; }
+    .badge.closed { color: var(--accent2); }
+
+    .distance-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    /* MAP */
+    .map-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Leaflet dark overrides */
+    .leaflet-control-zoom a {
+      background: var(--surface) !important;
+      color: var(--text) !important;
+      border-color: var(--border) !important;
+    }
+    .leaflet-control-attribution {
+      background: rgba(13,13,15,0.8) !important;
+      color: var(--muted) !important;
+    }
+
+    /* POPUP */
+    .leaflet-popup-content-wrapper {
+      background: var(--surface) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 12px !important;
+      color: var(--text) !important;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6) !important;
+    }
+    .leaflet-popup-tip { background: var(--surface) !important; }
+
+    .popup-inner { min-width: 220px; }
+    .popup-name {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 2px;
+      color: var(--accent);
+    }
+    .popup-city { font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; }
+    .popup-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .popup-row:last-child { border-bottom: none; }
+    .popup-label { color: var(--muted); }
+    .popup-val { font-weight: 500; }
+    .popup-val.green { color: #4ade80; }
+    .popup-val.yellow { color: var(--accent); }
+
+    /* LOCATE button */
+    .btn-locate {
+      position: absolute;
+      bottom: 2rem;
+      right: 1rem;
+      z-index: 999;
+      background: var(--accent);
+      color: #0d0d0f;
+      border: none;
+      border-radius: 50%;
+      width: 48px; height: 48px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(232,255,71,0.3);
+      transition: all 0.2s;
+    }
+    .btn-locate:hover { transform: scale(1.08); }
+
+    /* STATS bar */
+    .stats-bar {
+      position: absolute;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      background: rgba(13,13,15,0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 8px 20px;
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .stat-divider { width: 1px; height: 28px; background: var(--border); }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 460px;
+      position: relative;
+    }
+    .modal h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+      letter-spacing: 0.05em;
+    }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 14px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--accent);
+    }
+    .form-group select option { background: var(--surface2); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .btn-submit {
+      width: 100%;
+      background: var(--accent);
+      color: #0d0d0f;
+      border: none;
+      border-radius: 8px;
+      padding: 11px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    .btn-close {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    /* Custom marker */
+    .dart-marker {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 3px solid #0d0d0f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 4px 16px rgba(232,255,71,0.4);
+      transition: transform 0.2s;
+    }
+    .dart-marker:hover { transform: scale(1.15); }
+
+    @media (max-width: 700px) {
+      .sidebar { width: 100%; height: 40vh; }
+      .app { flex-direction: column; }
+      .stats-bar { display: none; }
+    }
+
+    /* SCORER */
+    .mode-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 20px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+    .mode-btn.active {
+      background: var(--accent);
+      color: #0d0d0f;
+      border-color: var(--accent);
+    }
+    .mode-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+    .player-card {
+      background: var(--surface2);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color 0.2s;
+    }
+    .player-card.active-player {
+      border-color: var(--accent);
+      background: rgba(232,255,71,0.05);
+    }
+    .player-card.winner-card {
+      border-color: #ffd700;
+      background: rgba(255,215,0,0.07);
+    }
+    .player-score {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .player-name-label {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .player-avg {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .player-legs {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .turn-arrow {
+      color: var(--accent);
+      font-size: 1.1rem;
+      margin-right: 0.5rem;
+    }
+
+    /* SETUP SCREEN */
+    .setup-tab {
+      background: var(--surface2);
+      border: none;
+      color: var(--muted);
+      padding: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .setup-tab.active { background: #2a3a2a; color: var(--text); }
+    .setup-tab:hover:not(.active) { color: var(--text); }
+
+    .setup-cell {
+      background: var(--surface2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 16px;
+    }
+    .setup-cell-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .setup-cell-sub {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .spinner-btn {
+      background: var(--surface2);
+      border: none;
+      color: var(--muted);
+      padding: 4px 12px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      transition: color 0.1s;
+    }
+    .spinner-btn:hover { color: var(--text); }
+
+    .setup-opt {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 12px 8px;
+      border-radius: 6px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .setup-opt.active { background: #2a3a2a; color: var(--text); border-color: #4a6a4a; }
+    .setup-opt:hover:not(.active) { border-color: var(--muted); color: var(--text); }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 26px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--surface2);
+      border-radius: 26px;
+      transition: 0.2s;
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: var(--muted);
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+    .toggle-switch input:checked + .toggle-slider { background: #4ade80; }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); background: white; }
+
+    .player-avatar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .player-avatar-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      transition: border-color 0.2s;
+    }
+    .player-avatar-circle:hover { border-color: var(--accent); }
+    .player-avatar-circle.add { border-style: dashed; font-size: 1.5rem; color: var(--muted); }
+    .player-avatar-name { font-size: 0.75rem; color: var(--muted); max-width: 60px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* DART INPUT GRID */
+    .multi-tab {
+      background: var(--surface2);
+      border: none;
+      color: var(--muted);
+      padding: 10px 4px 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .multi-tab:hover { color: var(--text); }
+    .multi-tab.active-tab { color: var(--text); background: #22222a; }
+
+    .dart-num {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 1.3rem;
+      font-family: 'Bebas Neue', sans-serif;
+      padding: 12px 4px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.1s;
+      user-select: none;
+      text-align: center;
+      position: relative;
+    }
+    .dart-num:hover { background: #2a2a34; }
+    .dart-num:active { background: var(--accent); color: #0d0d0f; }
+
+    .dart-val {
+      font-size: 0.7rem;
+      color: var(--accent);
+      margin-left: 2px;
+      vertical-align: super;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+    }
+
+    .dart-slot {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      min-width: 60px;
+      padding: 4px 10px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      color: var(--muted);
+      text-align: center;
+    }
+    .dart-slot.filled {
+      border-color: var(--accent);
+      color: var(--text);
+      background: rgba(232,255,71,0.06);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg class="logo-icon" viewBox="0 0 36 36" fill="none">
+      <circle cx="18" cy="18" r="17" stroke="#e8ff47" stroke-width="2"/>
+      <circle cx="18" cy="18" r="11" stroke="#e8ff47" stroke-width="1.5" stroke-dasharray="3 2"/>
+      <circle cx="18" cy="18" r="5" fill="#e8ff47"/>
+      <circle cx="18" cy="18" r="2" fill="#0d0d0f"/>
+      <line x1="18" y1="1" x2="18" y2="8" stroke="#e8ff47" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+    <span class="logo-text">DART<span>kartan</span></span>
+  </div>
+  <div class="header-right">
+    <span style="font-size:0.78rem;color:#4ade80;margin-right:0.5rem">✓ 10 verifierade barer i Göteborg</span>
+    <button class="btn-add" onclick="openScorer()" style="background:var(--surface2);color:var(--accent);border:1px solid var(--accent);margin-right:0.5rem">🎯 Scorer</button>
+    <button class="btn-add" onclick="openModal()">+ Lägg till bar</button>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="searchInput" type="text" placeholder="Sök stad eller bar…" oninput="filterBars()" />
+      </div>
+      <div class="filters">
+        <div class="filter-chip active" onclick="setFilter('alla', this)">Alla</div>
+        <div class="filter-chip" onclick="setFilter('gratis', this)">Gratis</div>
+        <div class="filter-chip" onclick="setFilter('upp-till-50', this)">Under 50kr</div>
+        <div class="filter-chip" onclick="setFilter('öppet', this)">Öppet nu</div>
+        <div class="filter-chip" onclick="setFilter('elektronisk', this)">E-tavla</div>
+        <div class="filter-chip" onclick="setFilter('nara', this)">Inom 2 km</div>
+      </div>
+      <div class="filters" style="margin-top:6px">
+        <div class="filter-chip city-chip active" onclick="setCity('alla', this)">🇸🇪 Alla städer</div>
+        <div class="filter-chip city-chip" onclick="setCity('Göteborg', this)">Göteborg</div>
+        <div class="filter-chip city-chip" onclick="setCity('Malmö', this)">Malmö</div>
+      </div>
+    </div>
+    <div class="results-label" id="resultsLabel">Visar alla barer</div>
+    <div class="bar-list" id="barList"></div>
+  </aside>
+
+  <div class="map-wrap">
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="stat-num" id="statTotal">0</span>
+        <span class="stat-label">Barer</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num" id="statCities">0</span>
+        <span class="stat-label">Städer</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num" id="statFree">0</span>
+        <span class="stat-label">Gratis</span>
+      </div>
+    </div>
+    <div id="map"></div>
+    <button class="btn-locate" onclick="locateUser()" title="Hitta mig">📍</button>
+  </div>
+</div>
+
+<!-- ADD BAR MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="btn-close" onclick="closeModal()">✕</button>
+    <h2>Lägg till bar</h2>
+    <form id="barForm" name="ny-bar" method="POST" data-netlify="true" onsubmit="return submitBar(event)">
+      <input type="hidden" name="form-name" value="ny-bar" />
+      <div class="form-group">
+        <label>Barens namn</label>
+        <input type="text" name="namn" id="formName" placeholder="Dartkartan" required />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Stad</label>
+          <input type="text" name="stad" id="formCity" placeholder="Stockholm" required />
+        </div>
+        <div class="form-group">
+          <label>Antal tavlor</label>
+          <input type="number" name="tavlor" id="formBoards" placeholder="2" min="1" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Pris per spelomgång</label>
+          <input type="text" name="pris" id="formPrice" placeholder="Gratis / 20 kr" />
+        </div>
+        <div class="form-group">
+          <label>Tavletyp</label>
+          <select name="tavletyp" id="formType">
+            <option value="Bristoltavla">Bristoltavla</option>
+            <option value="Elektronisk">Elektronisk</option>
+            <option value="Båda">Båda</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Adress</label>
+        <input type="text" name="adress" id="formAddress" placeholder="Storgatan 1" />
+      </div>
+      <div class="form-group">
+        <label>Öppettider (fritext)</label>
+        <input type="text" name="oppettider" id="formHours" placeholder="Mån–Fre 16–02, Lör–Sön 14–03" />
+      </div>
+      <div class="form-group">
+        <label>Ölpris (40–50 cl)</label>
+        <input type="text" name="olpris" id="formBeerPrice" placeholder="89 kr" />
+      </div>
+      <button type="submit" class="btn-submit">Skicka in 🎯</button>
+    </form>
+  </div>
+</div>
+
+<!-- SCORER MODAL -->
+<div id="scorerOverlay" style="display:none;position:fixed;inset:0;z-index:2000;background:radial-gradient(ellipse at 50% 0%, #1a1f1a 0%, #0d0d0f 50%, #0a0a0c 100%);overflow-y:auto">
+  <div style="max-width:660px;width:92%;margin:0 auto;padding:1.5rem 0 3rem;position:relative" id="scorerModal">
+    <button onclick="closeScorer()" style="position:fixed;top:1rem;right:1.5rem;z-index:2001;background:rgba(255,255,255,0.08);border:1px solid var(--border);color:var(--muted);width:40px;height:40px;border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);transition:all 0.2s" onmouseover="this.style.color='var(--text)';this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.color='var(--muted)';this.style.background='rgba(255,255,255,0.08)'">✕</button>
+
+    <!-- SETUP SCREEN -->
+    <div id="scorerSetup">
+      <!-- Singel / Lag toggle -->
+      <div class="setup-toggle" style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:8px;overflow:hidden;margin-bottom:1.2rem">
+        <button class="setup-tab active" id="tabSingel" onclick="setGameType('singel',this)">Singel spelare</button>
+        <button class="setup-tab" id="tabLag" onclick="setGameType('lag',this)">Lag</button>
+      </div>
+
+      <!-- Player avatars (singel) -->
+      <div id="playerAvatars" style="display:flex;align-items:center;justify-content:center;gap:0.8rem;margin-bottom:1.5rem;flex-wrap:wrap"></div>
+
+      <!-- Team setup (lag) -->
+      <div id="teamSetup" style="display:none;margin-bottom:1.5rem">
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:start">
+          <!-- Team 1 -->
+          <div style="text-align:center">
+            <div id="team1Name" onclick="renameTeam(1)" style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--accent);letter-spacing:0.04em;margin-bottom:0.7rem;cursor:pointer;background:rgba(232,255,71,0.08);border:1px solid rgba(232,255,71,0.25);border-radius:6px;padding:8px 12px;transition:all 0.15s" onmouseover="this.style.background='rgba(232,255,71,0.15)'" onmouseout="this.style.background='rgba(232,255,71,0.08)'" title="Klicka för att byta namn">Team 1</div>
+            <div id="team1Avatars" style="display:flex;align-items:flex-start;justify-content:center;gap:0.6rem;flex-wrap:wrap"></div>
+          </div>
+          <!-- Divider -->
+          <div style="width:1px;background:var(--border);min-height:80px;margin:1.5rem 1rem 0"></div>
+          <!-- Team 2 -->
+          <div style="text-align:center">
+            <div id="team2Name" onclick="renameTeam(2)" style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--accent2);letter-spacing:0.04em;margin-bottom:0.7rem;cursor:pointer;background:rgba(255,71,87,0.08);border:1px solid rgba(255,71,87,0.25);border-radius:6px;padding:8px 12px;transition:all 0.15s" onmouseover="this.style.background='rgba(255,71,87,0.15)'" onmouseout="this.style.background='rgba(255,71,87,0.08)'" title="Klicka för att byta namn">Team 2</div>
+            <div id="team2Avatars" style="display:flex;align-items:flex-start;justify-content:center;gap:0.6rem;flex-wrap:wrap"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spelinställningar -->
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.04em">SPELINSTÄLLNINGAR</span>
+      </div>
+
+      <!-- Legs -->
+      <div style="margin-bottom:0.5rem">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px">
+          <button class="setup-opt active" id="legsBestof" onclick="setLegsMode('bestof',this)" style="font-size:0.85rem;padding:8px">Bäst av</button>
+          <button class="setup-opt" id="legsFirstto" onclick="setLegsMode('firstto',this)" style="font-size:0.85rem;padding:8px">Först till</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch;border-radius:10px;overflow:hidden">
+          <div class="setup-cell"><div class="setup-cell-label" id="legsModeLabel" style="font-size:0.85rem">Bäst av</div></div>
+          <div style="display:flex;flex-direction:column;gap:0">
+            <button onclick="adjustLegs(1)" class="spinner-btn" style="border-radius:0;padding:6px 16px;font-size:0.8rem">&#9650;</button>
+            <div style="background:var(--accent);color:#0d0d0f;font-family:'Bebas Neue',sans-serif;font-size:2rem;display:flex;align-items:center;justify-content:center;min-width:52px;padding:4px 0" id="legsVal">1</div>
+            <button onclick="adjustLegs(-1)" class="spinner-btn" style="border-radius:0;padding:6px 16px;font-size:0.8rem">&#9660;</button>
+          </div>
+          <div class="setup-cell"><div class="setup-cell-label" style="font-size:0.85rem">Legs</div></div>
+        </div>
+      </div>
+
+      <!-- Sets -->
+      <div style="margin-bottom:1rem">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px">
+          <button class="setup-opt" id="setsBestof" onclick="setSetsMode('bestof',this)" style="font-size:0.85rem;padding:8px">Bäst av</button>
+          <button class="setup-opt active" id="setsFirstto" onclick="setSetsMode('firstto',this)" style="font-size:0.85rem;padding:8px">Först till</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch;border-radius:10px;overflow:hidden">
+          <div class="setup-cell"><div class="setup-cell-label" id="setsModeLabel" style="font-size:0.85rem">Först till</div></div>
+          <div style="display:flex;flex-direction:column;gap:0">
+            <button onclick="adjustSets(1)" class="spinner-btn" style="border-radius:0;padding:6px 16px;font-size:0.8rem">&#9650;</button>
+            <div style="background:var(--accent);color:#0d0d0f;font-family:'Bebas Neue',sans-serif;font-size:2rem;display:flex;align-items:center;justify-content:center;min-width:52px;padding:4px 0" id="setsVal">1</div>
+            <button onclick="adjustSets(-1)" class="spinner-btn" style="border-radius:0;padding:6px 16px;font-size:0.8rem">&#9660;</button>
+          </div>
+          <div class="setup-cell"><div class="setup-cell-label" style="font-size:0.85rem">Sets</div></div>
+        </div>
+      </div>
+
+      <!-- Spelläge: 301 / 501 / 701 / Vanlig 170 -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:0.6rem">
+        <button class="setup-opt" onclick="selectMode(this,301)">301</button>
+        <button class="setup-opt active" onclick="selectMode(this,501)">501</button>
+        <button class="setup-opt" onclick="selectMode(this,701)">701</button>
+        <button class="setup-opt" onclick="selectMode(this,170)" style="flex-direction:column;line-height:1.1"><span style="font-size:0.6rem;color:var(--muted);font-family:'DM Sans',sans-serif">Vanlig</span>170</button>
+      </div>
+
+      <!-- In-regler -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:0.4rem">
+        <button class="setup-opt active" onclick="setInRule(this,'rakt')">Rakt in</button>
+        <button class="setup-opt" onclick="setInRule(this,'dubbel')">Dubbel in</button>
+        <button class="setup-opt" onclick="setInRule(this,'trippel')">Trippel in</button>
+      </div>
+
+      <!-- Ut-regler -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:1rem">
+        <button class="setup-opt active" onclick="setOutRule(this,'dubbel')">Dubbel ut</button>
+        <button class="setup-opt" onclick="setOutRule(this,'trippel')">Trippel ut</button>
+        <button class="setup-opt" onclick="setOutRule(this,'enkel')">Enkel utgång</button>
+      </div>
+
+      <!-- Utgång % -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding:0 0.2rem">
+        <span style="font-size:0.9rem;font-weight:600">Utgång % <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;border:1px solid var(--muted);color:var(--muted);font-size:0.7rem;cursor:help;margin-left:4px" title="Visa sannolikhet att checka ut">?</span></span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="checkoutPctToggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <!-- Player name inputs -->
+      <div id="playerNameInputs" style="display:flex;flex-direction:column;gap:0.5rem"></div>
+
+      <button onclick="startGame()" style="width:100%;background:#ff6b47;color:white;border:none;border-radius:30px;padding:16px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.05rem;cursor:pointer;margin-top:1rem;letter-spacing:0.02em;transition:opacity 0.2s">Starta spelet</button>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="scorerGame" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <h2 id="gameTitle" style="font-size:1rem;color:var(--muted)">501 · Omgång 1</h2>
+        <button onclick="resetGame()" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:4px 12px;border-radius:5px;cursor:pointer;font-size:0.8rem">↺ Nytt spel</button>
+      </div>
+
+      <!-- Player panels -->
+      <div id="scoreboard"></div>
+
+      <!-- Input mode toggle -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:8px;overflow:hidden;margin-top:1rem;margin-bottom:0.6rem">
+        <button class="setup-tab active" id="modePerDart" onclick="setInputMode('perdart',this)" style="padding:8px;font-size:0.8rem">Per pil</button>
+        <button class="setup-tab" id="modeManual" onclick="setInputMode('manual',this)" style="padding:8px;font-size:0.8rem">Manuell</button>
+      </div>
+
+      <!-- Input -->
+      <div style="">
+        <div id="bustMsg" style="color:#ff4757;font-size:0.9rem;font-weight:700;min-height:1.4em;text-align:center;margin-bottom:0.4rem"></div>
+
+        <!-- MANUAL INPUT -->
+        <div id="manualInputSection" style="display:none">
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <input id="manualScoreInput" type="number" min="0" max="180" placeholder="Poäng (0–180)"
+              style="flex:1;background:var(--surface2);border:2px solid var(--border);color:var(--text);padding:14px 16px;border-radius:10px;font-size:1.4rem;font-family:'Bebas Neue',sans-serif;letter-spacing:0.05em;text-align:center;outline:none"
+              onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
+              onkeydown="if(event.key==='Enter')submitManual()" />
+            <button onclick="submitManual()" style="background:var(--accent);color:#0d0d0f;border:none;padding:14px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1rem;cursor:pointer">OK</button>
+            <button onclick="undoScore()" title="Ångra" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:14px;border-radius:10px;cursor:pointer;font-size:1.1rem">↩</button>
+          </div>
+          <!-- Quick numpad for manual -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:0.6rem">
+            <button onclick="manualNumpad(7)" class="dart-num">7</button>
+            <button onclick="manualNumpad(8)" class="dart-num">8</button>
+            <button onclick="manualNumpad(9)" class="dart-num">9</button>
+            <button onclick="manualNumpad(4)" class="dart-num">4</button>
+            <button onclick="manualNumpad(5)" class="dart-num">5</button>
+            <button onclick="manualNumpad(6)" class="dart-num">6</button>
+            <button onclick="manualNumpad(1)" class="dart-num">1</button>
+            <button onclick="manualNumpad(2)" class="dart-num">2</button>
+            <button onclick="manualNumpad(3)" class="dart-num">3</button>
+            <button onclick="manualNumpad(0)" class="dart-num" style="grid-column:span 2">0</button>
+            <button onclick="manualClear()" class="dart-num" style="color:#ff6b6b">⌫</button>
+          </div>
+        </div>
+
+        <!-- PER-DART INPUT -->
+        <div id="perDartSection">
+        <!-- Current turn darts -->
+        <div id="turnDartsDisplay" style="display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:0.7rem;min-height:2.2rem">
+          <span id="dart1" class="dart-slot">–</span>
+          <span id="dart2" class="dart-slot">–</span>
+          <span id="dart3" class="dart-slot">–</span>
+          <span style="color:var(--muted);margin:0 0.3rem">=</span>
+          <span id="turnTotal" style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--accent);min-width:40px;text-align:center">0</span>
+        </div>
+
+        <!-- Multiplier tabs -->
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-bottom:0;border-radius:8px 8px 0 0;overflow:hidden">
+          <button onclick="setMultiplier('S',this)" class="multi-tab active-tab" id="tabS">Single</button>
+          <button onclick="setMultiplier('D',this)" class="multi-tab" id="tabD">Double</button>
+          <button onclick="setMultiplier('T',this)" class="multi-tab" id="tabT">Treble</button>
+          <button onclick="dartInput('B',0)" class="multi-tab" style="color:#fbbf24">Bull<span style="display:block;font-size:0.65rem;opacity:0.7">50</span></button>
+          <button onclick="dartInput('O',0)" class="multi-tab" style="color:#fbbf24">Outer<span style="display:block;font-size:0.65rem;opacity:0.7">25</span></button>
+        </div>
+
+        <!-- Active tab indicator -->
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);height:3px;margin-bottom:6px">
+          <div id="indS" style="background:var(--accent2);height:3px"></div>
+          <div id="indD" style="background:transparent;height:3px"></div>
+          <div id="indT" style="background:transparent;height:3px"></div>
+          <div></div><div></div>
+        </div>
+
+        <!-- Number grid 1–20 -->
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px">
+          <button onclick="dartInput(currentMultiplier,1)" class="dart-num">1<span class="dart-val" id="v1"></span></button>
+          <button onclick="dartInput(currentMultiplier,2)" class="dart-num">2<span class="dart-val" id="v2"></span></button>
+          <button onclick="dartInput(currentMultiplier,3)" class="dart-num">3<span class="dart-val" id="v3"></span></button>
+          <button onclick="dartInput(currentMultiplier,4)" class="dart-num">4<span class="dart-val" id="v4"></span></button>
+          <button onclick="dartInput(currentMultiplier,5)" class="dart-num">5<span class="dart-val" id="v5"></span></button>
+          <button onclick="dartInput(currentMultiplier,6)" class="dart-num">6<span class="dart-val" id="v6"></span></button>
+          <button onclick="dartInput(currentMultiplier,7)" class="dart-num">7<span class="dart-val" id="v7"></span></button>
+          <button onclick="dartInput(currentMultiplier,8)" class="dart-num">8<span class="dart-val" id="v8"></span></button>
+          <button onclick="dartInput(currentMultiplier,9)" class="dart-num">9<span class="dart-val" id="v9"></span></button>
+          <button onclick="dartInput(currentMultiplier,10)" class="dart-num">10<span class="dart-val" id="v10"></span></button>
+          <button onclick="dartInput(currentMultiplier,11)" class="dart-num">11<span class="dart-val" id="v11"></span></button>
+          <button onclick="dartInput(currentMultiplier,12)" class="dart-num">12<span class="dart-val" id="v12"></span></button>
+          <button onclick="dartInput(currentMultiplier,13)" class="dart-num">13<span class="dart-val" id="v13"></span></button>
+          <button onclick="dartInput(currentMultiplier,14)" class="dart-num">14<span class="dart-val" id="v14"></span></button>
+          <button onclick="dartInput(currentMultiplier,15)" class="dart-num">15<span class="dart-val" id="v15"></span></button>
+          <button onclick="dartInput(currentMultiplier,16)" class="dart-num">16<span class="dart-val" id="v16"></span></button>
+          <button onclick="dartInput(currentMultiplier,17)" class="dart-num">17<span class="dart-val" id="v17"></span></button>
+          <button onclick="dartInput(currentMultiplier,18)" class="dart-num">18<span class="dart-val" id="v18"></span></button>
+          <button onclick="dartInput(currentMultiplier,19)" class="dart-num">19<span class="dart-val" id="v19"></span></button>
+          <button onclick="dartInput(currentMultiplier,20)" class="dart-num">20<span class="dart-val" id="v20"></span></button>
+        </div>
+
+        <!-- Bottom row: undo + miss -->
+        <div style="display:grid;grid-template-columns:1fr 2fr 1fr;gap:4px;margin-top:4px">
+          <button onclick="undoDart()" class="dart-num" style="font-size:1.1rem" title="Ångra senaste pilen">↩</button>
+          <button onclick="dartInput('M',0)" class="dart-num" style="font-weight:700;color:var(--muted)">MISS</button>
+          <button onclick="submitTurn()" class="dart-num" id="btnSubmitTurn" style="background:var(--accent);color:#0d0d0f;font-weight:700;font-size:0.85rem">OK ▶</button>
+        </div>
+      </div>
+      </div><!-- /perDartSection -->
+      </div><!-- /input wrapper -->
+      <input id="scoreInput" type="hidden" />
+
+      <!-- THROW HISTORY -->
+      <div style="margin-top:1.2rem;border-top:1px solid var(--border);padding-top:0.8rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+          <span style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em">Kasthistorik</span>
+          <span id="historyToggle" onclick="toggleHistory()" style="font-size:0.72rem;color:var(--accent);cursor:pointer">Visa</span>
+        </div>
+        <div id="throwHistory" style="display:none;max-height:200px;overflow-y:auto"></div>
+      </div>
+    </div>
+
+    <!-- WIN SCREEN -->
+    <div id="scorerWin" style="display:none;text-align:center;padding:2rem 0">
+      <div style="font-size:3rem;margin-bottom:0.5rem">🏆</div>
+      <h2 id="winnerName" style="font-size:1.8rem;color:var(--accent);margin-bottom:0.5rem"></h2>
+      <div id="winStats" style="color:var(--muted);font-size:0.9rem;margin-bottom:1.5rem"></div>
+      <button class="btn-submit" onclick="resetGame()">Spela igen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────
+// DATA – svenska barer med dartavlor
+// ──────────────────────────────────────────
+const bars = [
+  // ── GÖTEBORG – verifierade ──
+  {
+    id:13, name:"Majorna Bowling", city:"Göteborg",
+    lat:57.6986, lng:11.9393,
+    address:"Stigbergsliden 18", boards:3, price:"Sön–Tor 100 kr/h, Fre–Lör 150 kr/h",
+    type:"Bristoltavla", hours:"Mån–Tor 15–23:30, Fre 14–01, Lör 15–01, Sön 12–23:30",
+    open:true, verified:false,
+    note:"Göteborgs äldsta bowlinghall (sedan 1963) med 3 bristoltavlor. Restaurang Backen på plats. 20 års åldersgräns fre & lör efter 18:00."
+  },
+  {
+    id:12, name:"Dartbutik.se", city:"Göteborg",
+    lat:57.7221, lng:11.9753,
+    address:"Kalkbruksgatan 1, Ringön", boards:3, price:"Gratis",
+    type:"Bristoltavla", hours:"Tis–Ons 10–15, Tor 15–19, Lör 11–15 (Mån, Fre & Sön: Stängt)",
+    open:true, verified:true,
+    note:"Sveriges ledande dartbutik – köp pilar, tavlor och tillbehör! 3 kasttavlor att testa på plats."
+  },
+  {
+    id:6, name:"John Scotts Avenyn", city:"Göteborg",
+    lat:57.7009, lng:11.9738,
+    address:"Kungsportsavenyen 15", boards:2, price:"150 kr/timme",
+    type:"Bristoltavla", hours:"Kontrollera på johnscotts.se/avenyn",
+    open:true, verified:true,
+    note:"2 bristoltavlor med Scolia Pro självräkningssystem. 150 kr/timme. Öppet varje dag – fre & lör till 23:00. Pilar finns att hyra. Regelbundna dartturneringar!"
+  },
+  {
+    id:1, name:"Oche Göteborg", city:"Göteborg",
+    lat:57.7004, lng:11.9551,
+    address:"Norra Allégatan 5", boards:14, price:"ca 160 kr/pers",
+    type:"Elektronisk", hours:"Tis–Ons 16–23, Tor 16–00, Fre 16–01, Lör 15–01",
+    open:true, verified:true,
+    note:"Bokningsbas, 14 digitala banor. Studentrabatt tisdagar (50%)."
+  },
+  {
+    id:2, name:"Biljardpalatset", city:"Göteborg",
+    lat:57.7039, lng:11.9611,
+    address:"Ekelundsgatan 11", boards:7, price:"50 kr/h per tavla",
+    type:"Elektronisk", hours:"Mån–Fre 11:30–00, Lör–Sön 12–00",
+    open:true, verified:true,
+    note:"7 elektroniska dartbanor. Drop-in, ingen bokning. AW halva priset 16–18."
+  },
+  {
+    id:3, name:"Nordic Sportsbar", city:"Göteborg",
+    lat:57.6787, lng:12.0034,
+    address:"Mölndalsvägen 95", boards:4, price:"Ingår i aktivitetsavgift",
+    type:"Elektronisk", hours:"Öppet dagligen, ring för tider",
+    open:true, verified:true,
+    note:"Klassisk dart med digital poängräkning. Bowling, shuffleboard m.m. på samma ställe."
+  },
+  {
+    id:4, name:"Prost Bierhalle & Wirtshaus", city:"Göteborg",
+    lat:57.6996, lng:11.9651,
+    address:"Viktoriagatan 2A", boards:2, price:"Gratis",
+    type:"Bristoltavla", hours:"Kontrollera på hemsida",
+    open:true, verified:true,
+    note:"Tysk ölhall med dartavlor i biergarten. Gratis att spela!"
+  },
+  {
+    id:5, name:"Kville Biljard & Sportbar", city:"Göteborg",
+    lat:57.7191, lng:11.9471,
+    address:"Kvillegatan 2, Hisingen", boards:3, price:"Kontakta stället",
+    type:"Bristoltavla", hours:"Ring 031-711 14 44",
+    open:true, verified:true,
+    note:"Sportbar med dart, biljard & shuffleboard på Hisingen. Öppet sedan 1994."
+  },
+  {
+    id:8, name:"Haket – Bar å Sånt", city:"Göteborg",
+    lat:57.6991, lng:11.9425,
+    address:"Masthuggstorget 5", boards:6, price:"Gratis",
+    type:"Bristoltavla", hours:"Mån–Tor 16–sent, Fre 15–sent, Lör 14–sent, Sön Stängt",
+    open:true, verified:true,
+    note:"2 tavlor uppe + 4 i källaren. Pilar att låna i baren. Bokning rekommenderas – ofta kö!"
+  },
+  {
+    id:9, name:"Två Feta Grisar (Ringön)", city:"Göteborg",
+    lat:57.7218, lng:11.9685,
+    address:"Ringögatan 10", boards:3, price:"Gratis",
+    type:"Bristoltavla", hours:"Tor 16–21, Fre 11–22, Lör 13–22",
+    open:true, verified:true,
+    note:"Bryggeri på Ringön. Gratis dart med instruktör varje fredag kl 18:00 – NybörjarCup!"
+  },
+  {
+    id:10, name:"Restaurang Gigi", city:"Göteborg",
+    lat:57.6572, lng:11.9324,
+    address:"Radiovägen 1, Västra Frölunda", boards:3, price:"Gratis (med egna pilar)",
+    type:"Bristoltavla", hours:"Kontakta restaurangen",
+    open:true, verified:true,
+    note:"3 st Target Tor-tavlor. Gratis att kasta om du har egna pilar. Pilar kan lånas i baren annars. Eget dartlag – fråga om du får vara med! OBS: Ligger i Västra Frölunda, ca 8 km från centrum."
+  },
+  {
+    id:11, name:"Hard Rock Cafe Göteborg", city:"Göteborg",
+    lat:57.7014, lng:11.9746,
+    address:"Östra Hamngatan 1, Göteborg", boards:3, price:"Gratis (med egna pilar)",
+    type:"Bristoltavla", hours:"Kontrollera på hardrock.com",
+    open:true, verified:true,
+    note:"3 st Target Tor-tavlor. Gratis att kasta om du har egna pilar."
+  },
+  {
+    id:13, name:"Grace Avenyn", city:"Göteborg",
+    lat:57.7011, lng:11.9733,
+    address:"Kungsportsavenyen 9", boards:3, price:"120 kr/h",
+    type:"Bristoltavla", hours:"Kontrollera på gracesportsbar.se",
+    open:true, verified:true,
+    note:"3 bristoltavlor med Scolia självräkningssystem. 120 kr/timmen."
+  },
+  // ── MALMÖ ──
+  {
+    id:20, name:"Pickwick Pub", city:"Malmö",
+    lat:55.6029, lng:13.0033,
+    address:"Stadt Hamburgsgatan 2, Malmö", boards:2, price:"Gratis",
+    type:"Bristoltavla", hours:"Mån–Tor 16–23, Fre 15–01, Lör 13–01",
+    open:true, verified:true,
+    note:"Genuin brittisk pub mitt i Malmö. Darttävlingar varje tisdag kl 18–22! Pilar att låna. Afterwork mån–fre 16–19."
+  },
+  {
+    id:21, name:"Malmö Dart Center", city:"Malmö",
+    lat:55.6224, lng:13.0555,
+    address:"Stillmansgatan 11, Malmö", boards:10, price:"Kontakta stället",
+    type:"Bristoltavla", hours:"Ring 073-634 54 18",
+    open:true, verified:true,
+    note:"Malmös dedikerade dartcenter! Klubblokal med fokus på tävlingsdart. Kontakta dem för priser och öppettider."
+  },
+  {
+    id:22, name:"O'Learys Malmö", city:"Malmö",
+    lat:55.6074, lng:13.0253,
+    address:"Fredsgatan 12, Malmö", boards:3, price:"200 kr/h",
+    type:"Elektronisk", hours:"Kontrollera på olearys.se",
+    open:true, verified:true,
+    note:"3 digitala darttavlor. 200 kr/h för 2–4 personer per tavla. Stor sportsbar med mat och dryck."
+  },
+  {
+    id:23, name:"Big Bowl Malmö", city:"Malmö",
+    lat:55.6074, lng:13.0205,
+    address:"Drottninggatan 1C, Malmö", boards:4, price:"200 kr/55 min",
+    type:"Elektronisk", hours:"Kontrollera på bigbowl.se",
+    open:true, verified:true,
+    note:"Digitala dartbord. 200 kr per bana i 55 minuter. Bowling, restaurang och bar på samma ställe."
+  },
+
+
+];
+
+let activeFilter = 'alla';
+let activeCity = 'alla';
+let userLat = null, userLng = null;
+let selectedId = null;
+let markers = {};
+let map;
+
+// ──────────────────────────────────────────
+// MAP INIT
+// ──────────────────────────────────────────
+function initMap() {
+  map = L.map('map', { zoomControl: false }).setView([56.9, 12.8], 7);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© <a href="https://carto.com/">CARTO</a> © <a href="https://osm.org/">OSM</a>',
+    subdomains: 'abcd', maxZoom: 20
+  }).addTo(map);
+  L.control.zoom({ position: 'bottomleft' }).addTo(map);
+
+  bars.forEach(bar => {
+    const icon = L.divIcon({
+      className: '',
+      html: `<div class="dart-marker" title="${bar.name}">🎯</div>`,
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+      popupAnchor: [0, -20],
+    });
+    const marker = L.marker([bar.lat, bar.lng], { icon }).addTo(map);
+    marker.bindPopup(buildPopup(bar));
+    marker.on('click', () => selectBar(bar.id));
+    markers[bar.id] = marker;
+  });
+
+  updateStats();
+}
+
+function buildPopup(bar) {
+  const openHtml = bar.open
+    ? `<span class="popup-val green">Öppet</span>`
+    : `<span class="popup-val" style="color:#ff4757">Stängt</span>`;
+  const verifiedBadge = bar.verified ? `<span style="color:var(--accent);font-size:0.72rem">✓ Verifierat</span>` : '';
+  return `
+    <div class="popup-inner">
+      <div class="popup-name">${bar.name} ${verifiedBadge}</div>
+      <div class="popup-city">📍 ${bar.address}, ${bar.city}</div>
+      <div class="popup-row"><span class="popup-label">Status</span>${openHtml}</div>
+      <div class="popup-row"><span class="popup-label">Tavlor</span><span class="popup-val">${bar.boards} st (${bar.type})</span></div>
+      <div class="popup-row"><span class="popup-label">Pris</span><span class="popup-val yellow">${bar.price}</span></div>
+      ${bar.beer ? `<div class="popup-row"><span class="popup-label">Öl (40–50cl)</span><span class="popup-val">${bar.beer}</span></div>` : ''}
+      <div class="popup-row"><span class="popup-label">Öppettider</span><span class="popup-val">${bar.hours}</span></div>
+      ${bar.note ? `<div style="margin-top:8px;font-size:0.78rem;color:var(--muted);font-style:italic">${bar.note}</div>` : ''}
+      <a href="https://www.google.com/maps/dir/?api=1&destination=${bar.lat},${bar.lng}" target="_blank" rel="noopener"
+        style="display:inline-flex;align-items:center;gap:4px;margin-top:10px;padding:6px 12px;background:rgba(232,255,71,0.12);border:1px solid rgba(232,255,71,0.3);border-radius:6px;color:var(--accent);font-size:0.78rem;font-weight:600;text-decoration:none;transition:background 0.2s"
+        onmouseover="this.style.background='rgba(232,255,71,0.2)'" onmouseout="this.style.background='rgba(232,255,71,0.12)'">
+        📍 Vägbeskrivning
+      </a>
+    </div>
+  `;
+}
+
+// ──────────────────────────────────────────
+// SIDEBAR LIST
+// ──────────────────────────────────────────
+function renderList(data) {
+  const list = document.getElementById('barList');
+  const label = document.getElementById('resultsLabel');
+  label.textContent = `Visar ${data.length} av ${bars.length} barer`;
+
+  if (data.length === 0) {
+    list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:2rem;font-size:0.9rem">Inga barer matchar sökningen 🎯</div>`;
+    return;
+  }
+
+  list.innerHTML = data.map(bar => `
+    <div class="bar-card ${selectedId === bar.id ? 'active' : ''}" id="card-${bar.id}" onclick="selectBar(${bar.id})">
+      <div class="bar-name">${bar.name}</div>
+      <div class="bar-city">📍 ${bar.city}</div>
+      <div class="bar-meta">
+        <span class="badge price">💰 ${bar.price}</span>
+        <span class="badge boards">🎯 ${bar.boards} tavlor</span>
+        <span class="badge ${bar.open ? 'open' : 'closed'}">${bar.open ? '● Öppet' : '● Stängt'}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectBar(id) {
+  selectedId = id;
+  const bar = bars.find(b => b.id === id);
+  if (!bar) return;
+
+  // update cards
+  document.querySelectorAll('.bar-card').forEach(c => c.classList.remove('active'));
+  const card = document.getElementById(`card-${id}`);
+  if (card) { card.classList.add('active'); card.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+
+  // fly map
+  map.flyTo([bar.lat, bar.lng], 14, { duration: 1 });
+  markers[id].openPopup();
+}
+
+function filterBars() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let data = bars.filter(b =>
+    b.name.toLowerCase().includes(q) || b.city.toLowerCase().includes(q)
+  );
+  if (activeCity !== 'alla') data = data.filter(b => b.city === activeCity);
+  data = applyFilter(data);
+  renderList(data);
+  updateMarkers(data);
+}
+
+function setFilter(f, el) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-chip:not(.city-chip)').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filterBars();
+}
+
+function setCity(city, el) {
+  activeCity = city;
+  document.querySelectorAll('.city-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  // Flyg till rätt stad
+  if (city === 'Göteborg') map.flyTo([57.708, 11.965], 12, {duration:1});
+  else if (city === 'Malmö') map.flyTo([55.600, 13.000], 13, {duration:1});
+  else map.flyTo([56.9, 12.8], 7, {duration:1});
+  filterBars();
+}
+
+function distKm(lat1,lng1,lat2,lng2) {
+  const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLng = (lng2-lng1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function applyFilter(data) {
+  if (activeFilter === 'gratis')      return data.filter(b => b.price === 'Gratis');
+  if (activeFilter === 'upp-till-50') return data.filter(b => b.price === 'Gratis' || parseInt(b.price) <= 50);
+  if (activeFilter === 'öppet')       return data.filter(b => b.open);
+  if (activeFilter === 'elektronisk') return data.filter(b => b.type === 'Elektronisk');
+  if (activeFilter === 'nara') {
+    if (!userLat) { navigator.geolocation?.getCurrentPosition(p => { userLat=p.coords.latitude; userLng=p.coords.longitude; filterBars(); }); return data; }
+    return data.filter(b => distKm(userLat,userLng,b.lat,b.lng) <= 2).sort((a,b) => distKm(userLat,userLng,a.lat,a.lng) - distKm(userLat,userLng,b.lat,b.lng));
+  }
+  return data;
+}
+
+function updateMarkers(data) {
+  const visibleIds = new Set(data.map(b => b.id));
+  bars.forEach(bar => {
+    const m = markers[bar.id];
+    if (m) {
+      if (visibleIds.has(bar.id)) {
+        m.addTo(map);
+      } else {
+        m.remove();
+      }
+    }
+  });
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = bars.length;
+  document.getElementById('statCities').textContent = new Set(bars.map(b => b.city)).size;
+  document.getElementById('statFree').textContent = bars.filter(b => b.price === 'Gratis').length;
+}
+
+// ──────────────────────────────────────────
+// LOCATE USER
+// ──────────────────────────────────────────
+function locateUser() {
+  if (!navigator.geolocation) { alert('Din webbläsare stöder inte platsinformation.'); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    const { latitude: lat, longitude: lng } = pos.coords;
+    userLat = lat; userLng = lng;
+    map.flyTo([lat, lng], 12, { duration: 1.5 });
+
+    // find nearest
+    let nearest = null, minDist = Infinity;
+    bars.forEach(bar => {
+      const d = Math.hypot(bar.lat - lat, bar.lng - lng);
+      if (d < minDist) { minDist = d; nearest = bar; }
+    });
+    if (nearest) {
+      setTimeout(() => selectBar(nearest.id), 1600);
+    }
+  }, () => alert('Kunde inte hämta din position.'));
+}
+
+// ──────────────────────────────────────────
+// MODAL
+// ──────────────────────────────────────────
+function openModal()  { document.getElementById('modalOverlay').classList.add('open'); }
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+function submitBar(e) {
+  e.preventDefault();
+  const form = document.getElementById('barForm');
+  const name = document.getElementById('formName').value.trim();
+  const city = document.getElementById('formCity').value.trim();
+  if (!name || !city) { alert('Fyll i namn och stad!'); return false; }
+
+  // Skicka via Netlify Forms
+  fetch('/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(new FormData(form)).toString()
+  }).then(() => {
+    alert(`Tack! "${name}" i ${city} har skickats in för granskning. 🎯\n\nVi lägger till den på kartan så snart den är verifierad.`);
+  }).catch(() => {
+    alert(`Tack! "${name}" i ${city} har registrerats. 🎯`);
+  });
+
+  closeModal();
+  form.reset();
+  return false;
+}
+
+// close modal on overlay click
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ──────────────────────────────────────────
+// BOOT
+// ──────────────────────────────────────────
+window.addEventListener('load', () => {
+  initMap();
+  renderList(bars);
+});
+
+// ══════════════════════════════════════════
+// DARTSCORER
+// ══════════════════════════════════════════
+let scorerMode = 501;
+let scorerNumPlayers = 1;
+let scorerPlayers = [];
+let scorerCurrent = 0;
+let scorerRound = 1;
+let scorerHistory = [];
+let pendingThrows = [];
+let throwLog = []; // {player, darts:[], total, round}
+let bestOfLegs = 1;
+let firstToSets = 1;
+let inRule = 'rakt';    // rakt, dubbel, trippel
+let outRule = 'dubbel'; // dubbel, trippel, enkel
+let showCheckoutPct = true;
+let gameType = 'singel'; // singel, lag
+
+const CHECKOUTS = {
+  170:'T20 T20 Bull',169:'T20 T19 Bull',168:'T20 T20 T8',167:'T20 T19 T10',
+  166:'T20 T18 Bull',165:'T20 T19 T8',164:'T20 T18 T10',163:'T20 T19 T6',
+  162:'T20 T18 T8',161:'T20 T17 Bull',160:'T20 T20 D20',158:'T20 T20 D19',
+  157:'T20 T19 D20',156:'T20 T20 D18',155:'T20 T19 D19',154:'T20 T18 D20',
+  153:'T20 T19 D18',152:'T20 T20 D16',151:'T20 T17 D20',150:'T20 T18 D18',
+  149:'T20 T19 D16',148:'T20 T16 D20',147:'T20 T17 D18',146:'T20 T18 D16',
+  145:'T20 T15 D20',144:'T20 T20 D12',143:'T20 T17 D16',142:'T20 T14 D20',
+  141:'T20 T19 D12',140:'T20 T16 D16',139:'T19 T14 D20',138:'T20 T18 D12',
+  137:'T20 T15 D16',136:'T20 T20 D8',135:'T20 T17 D12',134:'T20 T14 D16',
+  133:'T20 T19 D8',132:'T20 T16 D12',131:'T20 T13 D16',130:'T20 T18 D8',
+  129:'T19 T16 D12',128:'T18 T14 D16',127:'T20 T17 D8',126:'T19 T15 D12',
+  125:'Bull T20 D20',124:'T20 T16 D8',123:'T19 T16 D9',122:'T18 T16 D8',
+  121:'T20 T11 D14',120:'T20 S20 D20',119:'T19 T12 D13',118:'T20 S18 D20',
+  117:'T20 S17 D20',116:'T20 S16 D20',115:'T20 S15 D20',114:'T20 S14 D20',
+  113:'T20 S13 D20',112:'T20 S12 D20',111:'T20 S11 D20',110:'T20 S10 D20',
+  109:'T20 S9 D20',108:'T20 S8 D20',107:'T19 S10 D20',106:'T20 S6 D20',
+  105:'T20 S5 D20',104:'T18 S10 D20',103:'T19 S6 D20',102:'T20 S10 D16',
+  101:'T17 S10 D20',100:'T20 D20',99:'T19 S10 D16',98:'T20 D19',
+  97:'T19 D20',96:'T20 D18',95:'T19 D19',94:'T18 D20',93:'T19 D18',
+  92:'T20 D16',91:'T17 D20',90:'T18 D18',89:'T19 D16',88:'T20 D14',
+  87:'T17 D18',86:'T18 D16',85:'T15 D20',84:'T20 D12',83:'T17 D16',
+  82:'T14 D20',81:'T19 D12',80:'T20 D10',79:'T13 D20',78:'T18 D12',
+  77:'T15 D16',76:'T20 D8',75:'T13 D18',74:'T14 D16',73:'T19 D8',
+  72:'T16 D12',71:'T13 D16',70:'T18 D8',69:'T15 D12',68:'T20 D4',
+  67:'T17 D8',66:'T10 D18',65:'T19 D4',64:'T16 D8',63:'T13 D12',
+  62:'T10 D16',61:'T15 D8',60:'S20 D20',59:'S19 D20',58:'S18 D20',
+  57:'S17 D20',56:'S16 D20',55:'S15 D20',54:'S14 D20',53:'S13 D20',
+  52:'S12 D20',51:'S11 D20',50:'Bull',40:'D20',38:'D19',36:'D18',
+  34:'D17',32:'D16',30:'D15',28:'D14',26:'D13',24:'D12',22:'D11',
+  20:'D10',18:'D9',16:'D8',14:'D7',12:'D6',10:'D5',8:'D4',6:'D3',4:'D2',2:'D1'
+};
+
+function openScorer() {
+  document.getElementById('scorerOverlay').style.display = 'block';
+  renderPlayerAvatars();
+  renderPlayerNameInputs();
+}
+function closeScorer() {
+  const ov = document.getElementById('scorerOverlay');
+  ov.style.display = 'none';
+  ov.scrollTop = 0;
+}
+
+let team1 = [''], team2 = [''];
+function setGameType(type, el) {
+  gameType = type;
+  document.querySelectorAll('.setup-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('playerAvatars').style.display = type === 'singel' ? 'flex' : 'none';
+  document.getElementById('playerNameInputs').style.display = type === 'singel' ? 'flex' : 'none';
+  document.getElementById('teamSetup').style.display = type === 'lag' ? 'block' : 'none';
+  if (type === 'lag') renderTeamInputs();
+}
+function addTeamPlayer(team) {
+  if (team === 1 && team1.length < 4) { team1.push(''); renderTeamInputs(); }
+  if (team === 2 && team2.length < 4) { team2.push(''); renderTeamInputs(); }
+}
+function removeTeamPlayer(team, idx) {
+  if (team === 1 && team1.length > 1) { team1.splice(idx,1); renderTeamInputs(); }
+  if (team === 2 && team2.length > 1) { team2.splice(idx,1); renderTeamInputs(); }
+}
+const teamIcons = [['🎯','🏹','⚡','🔥'],['💎','🌟','🎲','🃏']];
+function renderTeamInputs() {
+  [1,2].forEach(t => {
+    const arr = t===1 ? team1 : team2;
+    const icons = teamIcons[t-1];
+    const c = document.getElementById(`team${t}Avatars`);
+    const color = t===1 ? 'var(--accent)' : 'var(--accent2)';
+    let html = arr.map((name, i) => `
+      <div class="player-avatar" style="position:relative">
+        <div class="player-avatar-circle" onclick="renameTeamPlayer(${t},${i})" style="border-color:${color};width:48px;height:48px;font-size:1.2rem;cursor:pointer" title="Klicka för att byta namn">${icons[i] || '🎯'}</div>
+        <div style="width:62px;color:var(--muted);font-size:0.72rem;text-align:center;padding:2px 0;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name || 'Spelare '+(i+1)}</div>
+        ${arr.length > 1 ? `<button onclick="event.stopPropagation();removeTeamPlayer(${t},${i})" style="position:absolute;top:-3px;right:-3px;width:18px;height:18px;border-radius:50%;background:var(--accent2);border:2px solid var(--bg);color:white;font-size:0.55rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1">✕</button>` : ''}
+      </div>
+    `).join('');
+    if (arr.length < 4) {
+      html += `<div class="player-avatar" onclick="addTeamPlayer(${t})">
+        <div class="player-avatar-circle add" style="width:48px;height:48px;font-size:1.3rem">+</div>
+      </div>`;
+    }
+    c.innerHTML = html;
+  });
+}
+function renameTeam(t) {
+  const el = document.getElementById(`team${t}Name`);
+  const current = el.textContent;
+  const newName = prompt('Lagnamn:', current);
+  if (newName !== null && newName.trim()) el.textContent = newName.trim();
+}
+function renameTeamPlayer(t, i) {
+  const arr = t===1 ? team1 : team2;
+  const current = arr[i] || `Spelare ${i+1}`;
+  const newName = prompt('Spelarnamn:', current);
+  if (newName !== null) { arr[i] = newName.trim(); renderTeamInputs(); }
+}
+
+let legsMode = 'bestof'; // 'bestof' or 'firstto'
+let setsMode = 'firstto'; // 'bestof' or 'firstto'
+
+function setLegsMode(mode, el) {
+  legsMode = mode;
+  document.getElementById('legsBestof').classList.toggle('active', mode === 'bestof');
+  document.getElementById('legsFirstto').classList.toggle('active', mode === 'firstto');
+  document.getElementById('legsModeLabel').textContent = mode === 'bestof' ? 'Bäst av' : 'Först till';
+}
+function setSetsMode(mode, el) {
+  setsMode = mode;
+  document.getElementById('setsBestof').classList.toggle('active', mode === 'bestof');
+  document.getElementById('setsFirstto').classList.toggle('active', mode === 'firstto');
+  document.getElementById('setsModeLabel').textContent = mode === 'bestof' ? 'Bäst av' : 'Först till';
+}
+function adjustLegs(delta) {
+  bestOfLegs = Math.max(1, Math.min(15, bestOfLegs + delta));
+  document.getElementById('legsVal').textContent = bestOfLegs;
+}
+function adjustSets(delta) {
+  firstToSets = Math.max(1, Math.min(10, firstToSets + delta));
+  document.getElementById('setsVal').textContent = firstToSets;
+}
+function getLegsToWin() { return legsMode === 'bestof' ? Math.ceil(bestOfLegs / 2) : bestOfLegs; }
+function getSetsToWin() { return setsMode === 'bestof' ? Math.ceil(firstToSets / 2) : firstToSets; }
+
+function selectMode(el, val) {
+  scorerMode = val;
+  el.parentElement.querySelectorAll('.setup-opt').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function setInRule(el, rule) {
+  inRule = rule;
+  el.parentElement.querySelectorAll('.setup-opt').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function setOutRule(el, rule) {
+  outRule = rule;
+  el.parentElement.querySelectorAll('.setup-opt').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function addPlayer() {
+  if (scorerNumPlayers >= 6) return;
+  scorerNumPlayers++;
+  renderPlayerAvatars();
+  renderPlayerNameInputs();
+}
+function removePlayer(idx) {
+  if (scorerNumPlayers <= 1) return;
+  scorerPlayers.splice(idx, 1);
+  scorerNumPlayers--;
+  renderPlayerAvatars();
+  renderPlayerNameInputs();
+}
+let singelNames = []; // stores custom names for singel mode
+function renderPlayerAvatars() {
+  const c = document.getElementById('playerAvatars');
+  const icons = ['🎯','🏹','⚡','🔥','💎','🌟'];
+  let html = '';
+  for (let i = 0; i < scorerNumPlayers; i++) {
+    const nm = singelNames[i] || scorerPlayers[i]?.name || `Spelare ${i+1}`;
+    html += `<div class="player-avatar" style="position:relative">
+      <div class="player-avatar-circle" onclick="renameSingelPlayer(${i})" style="cursor:pointer" title="Klicka för att byta namn">${icons[i] || '🎯'}</div>
+      <div class="player-avatar-name" id="avatarName_${i}">${nm}</div>
+      ${scorerNumPlayers > 1 ? `<button onclick="event.stopPropagation();removePlayer(${i})" style="position:absolute;top:-4px;right:-4px;width:20px;height:20px;border-radius:50%;background:var(--accent2);border:2px solid var(--surface);color:white;font-size:0.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1">✕</button>` : ''}
+    </div>`;
+  }
+  if (scorerNumPlayers < 6) {
+    html += `<div class="player-avatar" onclick="addPlayer()">
+      <div class="player-avatar-circle add">+</div>
+    </div>`;
+  }
+  c.innerHTML = html;
+}
+function renameSingelPlayer(i) {
+  const current = singelNames[i] || `Spelare ${i+1}`;
+  const newName = prompt('Spelarnamn:', current);
+  if (newName !== null && newName.trim()) {
+    singelNames[i] = newName.trim();
+    renderPlayerAvatars();
+  }
+}
+function renderPlayerNameInputs() {
+  // Names now handled via avatar clicks, keep hidden inputs for startGame
+  const c = document.getElementById('playerNameInputs');
+  c.innerHTML = '';
+  for (let i = 0; i < scorerNumPlayers; i++) {
+    const inp = document.createElement('input');
+    inp.type = 'hidden';
+    inp.value = singelNames[i] || '';
+    inp.id = `pname_${i}`;
+    c.appendChild(inp);
+  }
+}
+
+let teamData = null; // null = singel, {teams:[{name,players,currentThrower},...]}
+
+function startGame() {
+  showCheckoutPct = document.getElementById('checkoutPctToggle')?.checked ?? true;
+  scorerPlayers = [];
+
+  if (gameType === 'lag') {
+    // Lag mode: 2 "players" (the teams), track throwers internally
+    const t1name = (document.getElementById('team1Name')?.textContent.trim()) || 'Team 1';
+    const t2name = (document.getElementById('team2Name')?.textContent.trim()) || 'Team 2';
+    const t1names = team1.map((n,i) => n.trim() || `Spelare ${i+1}`);
+    const t2names = team2.map((n,i) => n.trim() || `Spelare ${i+1}`);
+    teamData = {
+      teams: [
+        { name: t1name, players: t1names, currentThrower: 0 },
+        { name: t2name, players: t2names, currentThrower: 0 }
+      ]
+    };
+    scorerPlayers.push({ name: t1name, score: scorerMode, throws: 0, totalScore: 0, legs: 0, sets: 0, lastScore: undefined, opened: (inRule === 'rakt'), highRound: 0, highCheckout: 0 });
+    scorerPlayers.push({ name: t2name, score: scorerMode, throws: 0, totalScore: 0, legs: 0, sets: 0, lastScore: undefined, opened: (inRule === 'rakt'), highRound: 0, highCheckout: 0 });
+  } else {
+    teamData = null;
+    for (let i = 0; i < scorerNumPlayers; i++) {
+      const nm = singelNames[i]?.trim() || `Spelare ${i+1}`;
+      scorerPlayers.push({ name: nm, score: scorerMode, throws: 0, totalScore: 0, legs: 0, sets: 0, lastScore: undefined, opened: (inRule === 'rakt'), highRound: 0, highCheckout: 0 });
+    }
+  }
+  scorerCurrent = 0;
+  scorerRound = 1;
+  scorerHistory = [];
+  pendingThrows = [];
+  throwLog = [];
+  document.getElementById('scorerSetup').style.display = 'none';
+  document.getElementById('scorerWin').style.display = 'none';
+  document.getElementById('scorerGame').style.display = 'block';
+  turnDarts = [];
+  currentMultiplier = 'S';
+  renderScoreboard();
+  renderTurnDarts();
+  setMultiplier('S', document.getElementById('tabS'));
+  updateValLabels();
+  document.getElementById('gameTitle').textContent = `${scorerMode} · Omgång 1`;
+  document.getElementById('bustMsg').textContent = '';
+}
+
+function renderScoreboard() {
+  const sb = document.getElementById('scoreboard');
+  sb.innerHTML = scorerPlayers.map((p, i) => {
+    const isActive = i === scorerCurrent;
+    // Checkout baserat på kvarvarande poäng minus pågående tur
+    const liveScore = isActive ? p.score - turnDarts.reduce((s,d) => s+d.val, 0) : p.score;
+    const co = (outRule === 'dubbel') ? CHECKOUTS[liveScore] : null;
+    const avg = p.throws > 0 ? (p.totalScore / p.throws).toFixed(2) : '–';
+    const last = p.lastScore !== undefined ? p.lastScore : '–';
+    const coTags = co ? co.split(' ').map(t =>
+      `<span style="background:rgba(232,255,71,0.15);color:var(--accent);border:1px solid rgba(232,255,71,0.3);border-radius:5px;padding:2px 8px;font-size:0.82rem;font-weight:700;letter-spacing:0.05em">${t}</span>`
+    ).join(' ') : '';
+
+    return `
+    <div style="background:${isActive ? 'rgba(232,255,71,0.04)' : 'var(--surface2)'};
+      border:2px solid ${isActive ? 'var(--accent)' : 'var(--border)'};
+      border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.6rem;transition:all 0.2s">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:0.82rem;color:var(--muted);font-weight:600;letter-spacing:0.05em;margin-bottom:2px">
+            ${isActive ? '▶ ' : ''}${p.name.toUpperCase()}
+            ${teamData && isActive ? `<span style="color:var(--accent);font-size:0.72rem;margin-left:6px">🎯 ${teamData.teams[i].players[teamData.teams[i].currentThrower]}</span>` : ''}
+          </div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:3.5rem;line-height:1;color:${isActive ? 'var(--text)' : 'var(--muted)'}">${isActive ? liveScore : p.score}</div>
+          ${co && isActive ? `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">${coTags}</div>` : ''}
+        </div>
+        <div style="text-align:right;min-width:70px">
+          ${getSetsToWin() > 1 ? `<div style="font-size:0.65rem;color:var(--muted)">Sets</div><div style="font-size:1rem;font-weight:700">${p.sets}</div>` : ''}
+          ${bestOfLegs > 1 || scorerPlayers.length > 1 ? `<div style="font-size:0.65rem;color:var(--muted)">Legs</div><div style="font-size:1rem;font-weight:700">${p.legs}</div>` : ''}
+          ${!p.opened && isActive ? `<div style="font-size:0.6rem;color:var(--accent2);margin-top:4px">Ej öppnad</div>` : ''}
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-top:0.7rem;border-top:1px solid var(--border);padding-top:0.6rem">
+        <div>
+          <div style="font-size:0.7rem;color:var(--muted)">Snitt</div>
+          <div style="font-size:0.95rem;font-weight:700">${avg}</div>
+        </div>
+        <div>
+          <div style="font-size:0.7rem;color:var(--muted)">Senaste</div>
+          <div style="font-size:0.95rem;font-weight:700">${last}</div>
+        </div>
+        <div>
+          <div style="font-size:0.7rem;color:var(--muted)">Pilar</div>
+          <div style="font-size:0.95rem;font-weight:700">${p.throws * 3}</div>
+        </div>
+      </div>
+      ${p.highRound > 0 || p.highCheckout > 0 ? `<div style="display:flex;gap:0.8rem;margin-top:0.4rem">
+        ${p.highRound > 0 ? `<span style="font-size:0.68rem;color:var(--muted)">Best: <span style="color:var(--accent);font-weight:700">${p.highRound}</span></span>` : ''}
+        ${p.highCheckout > 0 ? `<span style="font-size:0.68rem;color:var(--muted)">Checkout: <span style="color:#4ade80;font-weight:700">${p.highCheckout}</span></span>` : ''}
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── Per-dart input ──
+let currentMultiplier = 'S';
+let turnDarts = []; // {type, num, val, label}
+
+function setMultiplier(m, el) {
+  currentMultiplier = m;
+  document.querySelectorAll('.multi-tab').forEach(t => t.classList.remove('active-tab'));
+  if (el) el.classList.add('active-tab');
+  document.getElementById('indS').style.background = m==='S' ? 'var(--accent2)' : 'transparent';
+  document.getElementById('indD').style.background = m==='D' ? 'var(--accent2)' : 'transparent';
+  document.getElementById('indT').style.background = m==='T' ? 'var(--accent2)' : 'transparent';
+  updateValLabels();
+}
+
+function updateValLabels() {
+  const mult = {S:1, D:2, T:3}[currentMultiplier] || 1;
+  for (let i = 1; i <= 20; i++) {
+    const el = document.getElementById('v'+i);
+    if (el) {
+      const v = i * mult;
+      el.textContent = mult > 1 ? v : '';
+    }
+  }
+}
+
+function isDouble(type) { return type === 'D' || type === 'B'; } // Bull counts as double
+function isTriple(type) { return type === 'T'; }
+
+function checkInRule(type) {
+  if (inRule === 'rakt') return true;
+  if (inRule === 'dubbel') return isDouble(type);
+  if (inRule === 'trippel') return isTriple(type);
+  return true;
+}
+
+function checkOutRule(type) {
+  if (outRule === 'enkel') return true;
+  if (outRule === 'dubbel') return isDouble(type);
+  if (outRule === 'trippel') return isTriple(type);
+  return true;
+}
+
+function dartInput(type, num) {
+  if (turnDarts.length >= 3) return;
+  let val, label;
+  if (type === 'B') { val = 50; label = 'Bull'; }
+  else if (type === 'O') { val = 25; label = 'Outer'; }
+  else if (type === 'M') { val = 0; label = 'Miss'; }
+  else {
+    const mult = {S:1, D:2, T:3}[type];
+    val = num * mult;
+    label = (type==='S'?'':''+type) + num;
+    if (type==='S') label = 'S'+num;
+  }
+
+  const p = scorerPlayers[scorerCurrent];
+
+  // ── In-regel: om spelaren inte öppnat ännu ──
+  if (!p.opened && val > 0) {
+    if (!checkInRule(type)) {
+      // Pilen räknas inte – registrera som 0 men visa vad som kastades
+      turnDarts.push({type, num, val: 0, label: label + '✗', originalVal: val});
+      renderTurnDarts();
+      document.getElementById('bustMsg').textContent = `${inRule === 'dubbel' ? 'Dubbel' : 'Trippel'} krävs för att öppna!`;
+      setTimeout(() => document.getElementById('bustMsg').textContent = '', 1500);
+      if (turnDarts.length === 3) setTimeout(() => submitTurn(), 300);
+      return;
+    }
+    // Spelaren öppnar!
+    p.opened = true;
+  }
+
+  // Check bust before adding
+  const currentTurnTotal = turnDarts.reduce((s,d) => s+d.val, 0);
+  const newTurnTotal = currentTurnTotal + val;
+  const newScore = p.score - newTurnTotal;
+
+  // ── Ut-regel: om detta skulle checka ut ──
+  if (newScore === 0) {
+    if (!checkOutRule(type)) {
+      // Bust – fel avslutning
+      document.getElementById('bustMsg').textContent = `💥 Bust! Kräver ${outRule === 'dubbel' ? 'dubbel' : 'trippel'} för att checka ut.`;
+      playSound('bust');
+      scorerHistory.push({ player: scorerCurrent, type: 'bust', prev: p.score, prevThrows: p.throws, prevTotal: p.totalScore, prevLast: p.lastScore, prevOpened: p.opened });
+      p.throws++;
+      p.lastScore = 0;
+      turnDarts = [];
+      renderTurnDarts();
+      renderScoreboard();
+      setTimeout(() => { document.getElementById('bustMsg').textContent = ''; nextPlayer(); }, 800);
+      return;
+    }
+  }
+
+  // Bust: vanlig – score under 0, eller lämnar 1 kvar (omöjligt att checka med dubbel ut)
+  const bustThreshold = (outRule === 'dubbel') ? 1 : 0;
+  if (newScore < 0 || (outRule === 'dubbel' && newScore === 1)) {
+    document.getElementById('bustMsg').textContent = `💥 Bust! ${p.name} behåller ${p.score}.`;
+    playSound('bust');
+    scorerHistory.push({ player: scorerCurrent, type: 'bust', prev: p.score, prevThrows: p.throws, prevTotal: p.totalScore, prevLast: p.lastScore, prevOpened: p.opened });
+    p.throws++;
+    p.lastScore = 0;
+    turnDarts = [];
+    renderTurnDarts();
+    renderScoreboard();
+    setTimeout(() => { document.getElementById('bustMsg').textContent = ''; nextPlayer(); }, 800);
+    return;
+  }
+
+  turnDarts.push({type, num, val, label});
+  renderTurnDarts();
+
+  // Check win
+  if (newScore === 0) {
+    submitTurn();
+    return;
+  }
+
+  // Auto-submit after 3 darts
+  if (turnDarts.length === 3) {
+    setTimeout(() => submitTurn(), 300);
+  }
+}
+
+function renderTurnDarts() {
+  for (let i = 0; i < 3; i++) {
+    const el = document.getElementById('dart'+(i+1));
+    if (turnDarts[i]) {
+      el.textContent = turnDarts[i].label;
+      el.classList.add('filled');
+    } else {
+      el.textContent = '–';
+      el.classList.remove('filled');
+    }
+  }
+  const total = turnDarts.reduce((s,d) => s+d.val, 0);
+  document.getElementById('turnTotal').textContent = total;
+  // Update checkout suggestions live
+  renderScoreboard();
+}
+
+function undoDart() {
+  if (turnDarts.length > 0) {
+    turnDarts.pop();
+    renderTurnDarts();
+    document.getElementById('bustMsg').textContent = '';
+  } else {
+    // Undo previous turn
+    undoScore();
+  }
+}
+
+function submitTurn() {
+  if (turnDarts.length === 0) return;
+  const val = turnDarts.reduce((s,d) => s+d.val, 0);
+  document.getElementById('bustMsg').textContent = '';
+
+  const p = scorerPlayers[scorerCurrent];
+  const newScore = p.score - val;
+
+  scorerHistory.push({ player: scorerCurrent, type: 'score', prev: p.score, val, prevThrows: p.throws, prevTotal: p.totalScore, prevLast: p.lastScore, prevOpened: p.opened });
+  p.score = newScore;
+  p.throws++;
+  p.totalScore += val;
+  p.lastScore = val;
+  if (val > p.highRound) p.highRound = val;
+  if (newScore === 0 && val > p.highCheckout) p.highCheckout = val;
+
+  // Log throw history
+  const throwerName = teamData ? teamData.teams[scorerCurrent].players[teamData.teams[scorerCurrent].currentThrower] : p.name;
+  throwLog.push({ player: scorerCurrent, name: throwerName, darts: turnDarts.map(d=>d.label), total: val, round: scorerRound, checkout: newScore === 0 });
+  renderThrowHistory();
+
+  // Sound effects
+  if (val === 180) playSound('180');
+  else if (newScore === 0) playSound('checkout');
+
+  turnDarts = [];
+  renderTurnDarts();
+
+  if (newScore === 0) {
+    p.legs++;
+    const legsToWin = getLegsToWin();
+
+    if (p.legs >= legsToWin) {
+      // Won this set
+      p.sets++;
+      if (p.sets >= getSetsToWin()) {
+        // Won the match!
+        renderScoreboard();
+        setTimeout(() => showWin(p), 300);
+        return;
+      }
+      // Start new set – reset legs for all players, reset scores
+      scorerPlayers.forEach(pl => { pl.legs = 0; pl.score = scorerMode; pl.opened = (inRule === 'rakt'); });
+      scorerRound = 1;
+      scorerCurrent = 0;
+      document.getElementById('bustMsg').textContent = `🎉 ${p.name} vinner setet! (${p.sets}/${getSetsToWin()})`;
+      renderScoreboard();
+      setTimeout(() => {
+        document.getElementById('bustMsg').textContent = '';
+        document.getElementById('gameTitle').textContent = `${scorerMode} · Set ${p.sets + 1 > firstToSets ? firstToSets : Math.max(...scorerPlayers.map(x=>x.sets)) + 1}`;
+        renderScoreboard();
+      }, 1500);
+      return;
+    }
+
+    // Won the leg but not the set yet – start new leg
+    scorerPlayers.forEach(pl => { pl.score = scorerMode; pl.opened = (inRule === 'rakt'); });
+    scorerRound = 1;
+    scorerCurrent = 0;
+    document.getElementById('bustMsg').textContent = `🎯 ${p.name} vinner leg! (${p.legs}/${legsToWin})`;
+    renderScoreboard();
+    setTimeout(() => {
+      document.getElementById('bustMsg').textContent = '';
+      document.getElementById('gameTitle').textContent = `${scorerMode} · Leg ${Math.max(...scorerPlayers.map(x=>x.legs)) + 1}`;
+      renderScoreboard();
+    }, 1200);
+    return;
+  }
+
+  renderScoreboard();
+  nextPlayer();
+}
+
+// Keep addScore for backwards compat (hidden input)
+function addScore() { submitTurn(); }
+
+function nextPlayer() {
+  // Rotate thrower within team before switching
+  if (teamData) {
+    teamData.teams[scorerCurrent].currentThrower =
+      (teamData.teams[scorerCurrent].currentThrower + 1) % teamData.teams[scorerCurrent].players.length;
+  }
+  scorerCurrent = (scorerCurrent + 1) % scorerPlayers.length;
+  if (scorerCurrent === 0) scorerRound++;
+  turnDarts = [];
+  renderTurnDarts();
+  document.getElementById('gameTitle').textContent = `${scorerMode} · Omgång ${scorerRound}`;
+  renderScoreboard();
+}
+
+function undoScore() {
+  if (scorerHistory.length === 0) return;
+  document.getElementById('bustMsg').textContent = '';
+  const last = scorerHistory.pop();
+  const p = scorerPlayers[last.player];
+  p.score = last.prev;
+  p.throws = last.prevThrows;
+  p.totalScore = last.prevTotal;
+  p.lastScore = last.prevLast;
+  if (last.prevOpened !== undefined) p.opened = last.prevOpened;
+  scorerCurrent = last.player;
+  if (last.type === 'score' && scorerCurrent === scorerPlayers.length - 1 && scorerRound > 1) scorerRound--;
+  document.getElementById('gameTitle').textContent = `${scorerMode} · Omgång ${scorerRound}`;
+  renderScoreboard();
+}
+
+function showWin(p) {
+  document.getElementById('scorerGame').style.display = 'none';
+  document.getElementById('scorerWin').style.display = 'block';
+  document.getElementById('winnerName').textContent = `${p.name} vinner! 🏆`;
+  const avg = p.throws > 0 ? (p.totalScore / p.throws).toFixed(1) : '–';
+  let statsText = `${scorerMode}`;
+  if (firstToSets > 1) statsText += ` · ${p.sets} sets`;
+  if (bestOfLegs > 1) statsText += ` · ${p.legs} legs`;
+  statsText += ` · ${p.throws * 3} pilar · Snitt ${avg}`;
+  const rules = [];
+  if (inRule !== 'rakt') rules.push(inRule === 'dubbel' ? 'Dubbel in' : 'Trippel in');
+  if (outRule !== 'enkel') rules.push(outRule === 'dubbel' ? 'Dubbel ut' : 'Trippel ut');
+  if (rules.length) statsText += ` · ${rules.join(', ')}`;
+  document.getElementById('winStats').textContent = statsText;
+}
+
+function resetGame() {
+  document.getElementById('scorerWin').style.display = 'none';
+  document.getElementById('scorerGame').style.display = 'none';
+  document.getElementById('scorerSetup').style.display = 'block';
+  scorerPlayers.forEach(p => { p.score = scorerMode; p.throws = 0; p.totalScore = 0; p.lastScore = undefined; p.legs = 0; p.sets = 0; p.opened = (inRule === 'rakt'); p.highRound = 0; p.highCheckout = 0; });
+  pendingThrows = [];
+  throwLog = [];
+  if (teamData) { teamData.teams.forEach(t => t.currentThrower = 0); }
+  renderPlayerAvatars();
+  renderPlayerNameInputs();
+  if (gameType === 'lag') renderTeamInputs();
+}
+
+// ── Input Mode Toggle ──
+let inputMode = 'perdart';
+function setInputMode(mode, el) {
+  inputMode = mode;
+  document.querySelectorAll('#modePerDart,#modeManual').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('perDartSection').style.display = mode === 'perdart' ? 'block' : 'none';
+  document.getElementById('manualInputSection').style.display = mode === 'manual' ? 'block' : 'none';
+  if (mode === 'manual') document.getElementById('manualScoreInput').focus();
+}
+function manualNumpad(n) {
+  const inp = document.getElementById('manualScoreInput');
+  const next = (inp.value || '') + String(n);
+  if (parseInt(next) > 180) return;
+  inp.value = next;
+}
+function manualClear() {
+  const inp = document.getElementById('manualScoreInput');
+  inp.value = inp.value.slice(0, -1);
+}
+function submitManual() {
+  const inp = document.getElementById('manualScoreInput');
+  const val = parseInt(inp.value);
+  inp.value = '';
+  document.getElementById('bustMsg').textContent = '';
+  if (isNaN(val) || val < 0 || val > 180) {
+    document.getElementById('bustMsg').textContent = 'Ange 0–180.';
+    return;
+  }
+  const p = scorerPlayers[scorerCurrent];
+  const newScore = p.score - val;
+  // Bust check
+  if (newScore < 0 || (outRule === 'dubbel' && newScore === 1)) {
+    document.getElementById('bustMsg').textContent = `💥 Bust! ${p.name} behåller ${p.score}.`;
+    playSound('bust');
+    scorerHistory.push({ player: scorerCurrent, type: 'bust', prev: p.score, prevThrows: p.throws, prevTotal: p.totalScore, prevLast: p.lastScore, prevOpened: p.opened });
+    p.throws++;
+    p.lastScore = 0;
+    renderScoreboard();
+    setTimeout(() => { document.getElementById('bustMsg').textContent = ''; nextPlayer(); }, 800);
+    return;
+  }
+  scorerHistory.push({ player: scorerCurrent, type: 'score', prev: p.score, val, prevThrows: p.throws, prevTotal: p.totalScore, prevLast: p.lastScore, prevOpened: p.opened });
+  p.score = newScore;
+  p.throws++;
+  p.totalScore += val;
+  p.lastScore = val;
+  if (val > p.highRound) p.highRound = val;
+  if (newScore === 0 && val > p.highCheckout) p.highCheckout = val;
+  throwLog.push({ player: scorerCurrent, name: p.name, darts: [val+''], total: val, round: scorerRound, checkout: newScore === 0 });
+  renderThrowHistory();
+  if (val === 180) playSound('180');
+  else if (newScore === 0) playSound('checkout');
+  if (newScore === 0) {
+    p.legs++;
+    const legsToWin = getLegsToWin();
+    if (p.legs >= legsToWin) {
+      p.sets++;
+      if (p.sets >= getSetsToWin()) { renderScoreboard(); setTimeout(() => showWin(p), 300); return; }
+      scorerPlayers.forEach(pl => { pl.legs = 0; pl.score = scorerMode; pl.opened = (inRule === 'rakt'); });
+      scorerRound = 1; scorerCurrent = 0;
+      document.getElementById('bustMsg').textContent = `🎉 ${p.name} vinner setet! (${p.sets}/${getSetsToWin()})`;
+      renderScoreboard();
+      setTimeout(() => { document.getElementById('bustMsg').textContent = ''; renderScoreboard(); }, 1500);
+      return;
+    }
+    scorerPlayers.forEach(pl => { pl.score = scorerMode; pl.opened = (inRule === 'rakt'); });
+    scorerRound = 1; scorerCurrent = 0;
+    document.getElementById('bustMsg').textContent = `🎯 ${p.name} vinner leg! (${p.legs}/${legsToWin})`;
+    renderScoreboard();
+    setTimeout(() => { document.getElementById('bustMsg').textContent = ''; renderScoreboard(); }, 1200);
+    return;
+  }
+  renderScoreboard();
+  nextPlayer();
+  if (inputMode === 'manual') setTimeout(() => document.getElementById('manualScoreInput').focus(), 50);
+}
+
+// ── Throw History ──
+function toggleHistory() {
+  const el = document.getElementById('throwHistory');
+  const btn = document.getElementById('historyToggle');
+  if (el.style.display === 'none') { el.style.display = 'block'; btn.textContent = 'Dölj'; }
+  else { el.style.display = 'none'; btn.textContent = 'Visa'; }
+}
+function renderThrowHistory() {
+  const el = document.getElementById('throwHistory');
+  if (!el || el.style.display === 'none') return;
+  el.innerHTML = throwLog.slice().reverse().map(t => {
+    const dartsStr = t.darts.join(' · ');
+    const color = t.checkout ? '#4ade80' : t.total >= 100 ? 'var(--accent)' : 'var(--text)';
+    const badge = t.total === 180 ? ' <span style="color:#fbbf24;font-weight:700">180!</span>' : t.checkout ? ' <span style="color:#4ade80">✓</span>' : '';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:0.78rem">
+      <span style="color:var(--muted)">${t.name}</span>
+      <span style="color:var(--muted);flex:1;text-align:center;font-size:0.72rem">${dartsStr}</span>
+      <span style="color:${color};font-weight:700;min-width:35px;text-align:right">${t.total}${badge}</span>
+    </div>`;
+  }).join('');
+  el.scrollTop = 0;
+}
+
+// ── Sound Effects (Web Audio API) ──
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(type) {
+  try {
+    if (navigator.vibrate) navigator.vibrate(type === '180' ? [100,50,100,50,100] : type === 'checkout' ? [200] : [80]);
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    gain.gain.value = 0.15;
+    if (type === '180') {
+      osc.frequency.value = 880; osc.type = 'square';
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+    } else if (type === 'checkout') {
+      osc.frequency.value = 660; osc.type = 'sine';
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+    } else if (type === 'bust') {
+      osc.frequency.value = 200; osc.type = 'sawtooth';
+      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+    }
+  } catch(e) {}
+}
+
+
+</script>
+</body>
+</html>
