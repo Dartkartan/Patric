@@ -890,6 +890,10 @@
         <div class="filter-chip city-chip" onclick="setCity('Västervik', this)">Västervik</div>
         <div class="filter-chip city-chip" onclick="setCity('Tranås', this)">Tranås</div>
         <div class="filter-chip city-chip" onclick="setCity('Torslanda', this)">Torslanda</div>
+        <div class="filter-chip city-chip" onclick="setCity('Trollhättan', this)">Trollhättan</div>
+        <div class="filter-chip city-chip" onclick="setCity('Norrköping', this)">Norrköping</div>
+        <div class="filter-chip city-chip" onclick="setCity('Uddevalla', this)">Uddevalla</div>
+        <div class="filter-chip city-chip" onclick="setCity('Örebro', this)">Örebro</div>
       </div>
     </div>
     <div class="results-label" id="resultsLabel">Visar alla barer</div>
@@ -1392,9 +1396,9 @@ const bars = [
   {
     id:29, name:"Sjökanten", city:"Lysekil",
     lat:58.2731, lng:11.4373,
-    address:"Södra Hamngatan, Lysekil", boards:3, price:"100 kr/h",
+    address:"Södra Hamngatan 2, Lysekil", boards:3, price:"100 kr/h",
     type:"Bristoltavla", hours:"Mån–Tor 11–21, Fre–Lör 11–01",
-    open:true, verified:false, beer:"60 kr",
+    open:true, verified:false, beer:"79 kr",
     note:"3 bristoltavlor vid hamnen."
   },
   // ── VÄSTERVIK ──
@@ -1492,6 +1496,58 @@ const bars = [
     type:"Bristoltavla", hours:"Sön–Tor 16–sent",
     open:true, verified:false, beer:"59 kr",
     note:"2 bristoltavlor. Gratis att spela!"
+  },
+  {
+    id:41, name:"Bollywood", city:"Göteborg",
+    lat:57.7065, lng:11.9540,
+    address:"Bangatan 8, Göteborg", boards:1, price:"Gratis",
+    type:"Bristoltavla", hours:"Tis–Sön 12–sent",
+    open:true, verified:false, beer:"45 kr",
+    note:"1 bristoltavla. Gratis att spela! Billig öl."
+  },
+  // ── TROLLHÄTTAN ──
+  {
+    id:42, name:"Bg's", city:"Trollhättan",
+    lat:58.2836, lng:12.2888,
+    address:"Spannmålsgatan 11, Trollhättan", boards:3, price:"200 kr/h",
+    type:"Bristol Autoscoring", hours:"Kontakta stället",
+    open:true, verified:false, beer:"100 kr",
+    note:"3 bristoltavlor med autoscoring."
+  },
+  // ── NORRKÖPING ──
+  {
+    id:43, name:"Biljardbaren", city:"Norrköping",
+    lat:58.5901, lng:16.1826,
+    address:"Prästgatan 50, Norrköping", boards:5, price:"250 kr",
+    type:"Bristol Autoscoring", hours:"16–23",
+    open:true, verified:false,
+    note:"5 bristoltavlor med autoscoring."
+  },
+  // ── UDDEVALLA ──
+  {
+    id:44, name:"Danny's", city:"Uddevalla",
+    lat:58.3494, lng:11.9340,
+    address:"Norra Drottninggatan, Uddevalla", boards:3, price:"90 kr/pers/h",
+    type:"Bristol Autoscoring", hours:"Kontakta stället",
+    open:true, verified:false, beer:"65 kr",
+    note:"Bristoltavlor med autoscoring. 90 kr per person per timme."
+  },
+  // ── ÖREBRO ──
+  {
+    id:45, name:"Kvarteret", city:"Örebro",
+    lat:59.2753, lng:15.2134,
+    address:"Engelbrektsgatan 6, Örebro", boards:8, price:"Gratis (med egna pilar)",
+    type:"Bristoltavla", hours:"Tis–Tor 16–22, Fre 16–01, Lör 14–01",
+    open:true, verified:false, beer:"60 kr",
+    note:"8 bristoltavlor. Gratis att spela med egna pilar."
+  },
+  {
+    id:46, name:"Videobiljarden", city:"Örebro",
+    lat:59.2741, lng:15.2071,
+    address:"Järntorgsgatan 6, Örebro", boards:4, price:"Gratis (med egna pilar)",
+    type:"Bristoltavla", hours:"Sön–Tor 13–00, Fre–Lör 13–02",
+    open:true, verified:false, beer:"65 kr",
+    note:"4 bristoltavlor. Gratis att spela med egna pilar."
   },
 
 ];
@@ -1632,6 +1688,10 @@ function setCity(city, el) {
     'Västervik': [[57.758, 16.637], 13],
     'Tranås': [[58.035, 14.974], 13],
     'Torslanda': [[57.711, 11.777], 14],
+    'Trollhättan': [[58.284, 12.289], 13],
+    'Norrköping': [[58.590, 16.183], 13],
+    'Uddevalla': [[58.349, 11.934], 13],
+    'Örebro': [[59.275, 15.210], 13],
   };
   const cc = cityCoords[city];
   if (cc) map.flyTo(cc[0], cc[1], {duration:1});
