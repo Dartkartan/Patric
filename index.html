@@ -1000,6 +1000,7 @@
         <div class="filter-chip city-chip" onclick="setCity('Södertälje', this)">Södertälje</div>
         <div class="filter-chip city-chip" onclick="setCity('Sandviken', this)">Sandviken</div>
         <div class="filter-chip city-chip" onclick="setCity('Eskilstuna', this)">Eskilstuna</div>
+        <div class="filter-chip city-chip" onclick="setCity('Karlskoga', this)">Karlskoga</div>
       </div>
     </div>
     <div class="results-label" id="resultsLabel">Visar alla barer</div>
@@ -1773,6 +1774,15 @@ const bars = [
     open:true, verified:false, beer:"69 kr",
     note:"6 bristoltavlor."
   },
+  // ── KARLSKOGA ──
+  {
+    id:57, name:"Flamingo Dartklubb", city:"Karlskoga",
+    lat:59.3267, lng:14.5208,
+    address:"Bergsmansgatan 4, Karlskoga", boards:7, price:"Gratis",
+    type:"Bristoltavla", hours:"Se Facebooksida, Flamingo DC",
+    open:true, verified:false,
+    note:"7 bristoltavlor. Gratis att spela."
+  },
 
 ];
 
@@ -1979,6 +1989,7 @@ function setCity(city, el) {
     'Södertälje': [[59.195, 17.625], 13],
     'Sandviken': [[60.620, 16.776], 13],
     'Eskilstuna': [[59.371, 16.509], 13],
+    'Karlskoga': [[59.327, 14.521], 13],
   };
   const cc = cityCoords[city];
   if (cc) map.flyTo(cc[0], cc[1], {duration:1});
