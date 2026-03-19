@@ -1371,9 +1371,17 @@ const bars = [
     id:26, name:"Goose Malmö", city:"Malmö",
     lat:55.5992, lng:12.9979,
     address:"Davidshallstorg 5, Malmö", boards:2, price:"Gratis",
-    type:"Bristoltavla", hours:"Mån–Tor 16–23, Fre–Lör 16–01",
+    type:"Bristoltavla", hours:"Mån–Tor 16–23, Fre 16–01, Lör 12–01",
     open:true, verified:false, beer:"90 kr",
     note:"2 bristoltavlor. Gratis att spela!"
+  },
+  {
+    id:47, name:"Fagans Irish Pub", city:"Malmö",
+    lat:55.6048, lng:13.0008,
+    address:"Per Weijersgatan 4, Malmö", boards:2, price:"Gratis",
+    type:"Bristoltavla", hours:"Mån–Ons 16–00, Tor 15–01, Fre 14–02, Lör 12–02, Sön 12–23",
+    open:true, verified:false, beer:"90 kr",
+    note:"2 bristoltavlor. Gratis att spela! Irländsk pub."
   },
   // ── ALINGSÅS ──
   {
@@ -1397,7 +1405,7 @@ const bars = [
     id:29, name:"Sjökanten", city:"Lysekil",
     lat:58.2731, lng:11.4373,
     address:"Södra Hamngatan 2, Lysekil", boards:3, price:"100 kr/h",
-    type:"Bristoltavla", hours:"Mån–Tor 11–21, Fre–Lör 11–01",
+    type:"Bristoltavla", hours:"Mån–Tor 11–22, Fre–Lör 11–sent",
     open:true, verified:false, beer:"79 kr",
     note:"3 bristoltavlor vid hamnen."
   },
@@ -1424,7 +1432,7 @@ const bars = [
     id:32, name:"Borlänge Dart Club", city:"Borlänge",
     lat:60.4774, lng:15.4313,
     address:"Hantverkargatan 9, Borlänge", boards:14, price:"Gratis",
-    type:"Bristoltavla", hours:"Mån 17–20, Tor 17–20",
+    type:"Bristoltavla", hours:"Mån 17–20, Tor 17–22",
     open:true, verified:false,
     note:"14 bristoltavlor! Dartklubb med gratis spel."
   },
@@ -1433,8 +1441,8 @@ const bars = [
     id:33, name:"East End Company", city:"Stockholm",
     lat:59.3636, lng:17.9967,
     address:"Solnavägen 104, Solna", boards:14, price:"Kontakta stället",
-    type:"Bristoltavla", hours:"Mån–Fre 15–, Lör 14–",
-    open:true, verified:false, beer:"65 kr",
+    type:"Bristoltavla", hours:"Mån–Fre 15–, Lör 14–, Sön Stängt",
+    open:true, verified:false, beer:"60 kr – Grängesberg 50 cl (fat)",
     note:"14 bristoltavlor. Stort dartställe i Solna."
   },
   // ── UPPSALA ──
@@ -1442,7 +1450,7 @@ const bars = [
     id:34, name:"Latitude-59", city:"Uppsala",
     lat:59.8687, lng:17.6288,
     address:"Svartbäcksgatan 71, Uppsala", boards:3, price:"150 kr",
-    type:"Bristoltavla", hours:"Mån–Tis Stängt, Ons– öppet",
+    type:"Bristoltavla", hours:"Mån–Tis Stängt, Ons–Tor 15–23, Fre 15–00, Lör 10–00, Sön 10–23",
     open:true, verified:false, beer:"100 kr",
     note:"3 bristoltavlor."
   },
@@ -1450,7 +1458,7 @@ const bars = [
     id:35, name:"Interpool Uppsala", city:"Uppsala",
     lat:59.8602, lng:17.6371,
     address:"Svartbäcksgatan 11, Uppsala", boards:8, price:"100 kr",
-    type:"Bristol Autoscoring", hours:"Mån–Tor 16–02, Fre–Lör 16–03",
+    type:"Bristol Autoscoring", hours:"Mån–Tor 16–02, Fre–Lör 13–03, Sön 13–02",
     open:true, verified:false, beer:"99 kr",
     note:"8 bristoltavlor med autoscoring."
   },
@@ -1458,7 +1466,7 @@ const bars = [
     id:36, name:"Sonoro Bar", city:"Uppsala",
     lat:59.8595, lng:17.6408,
     address:"Vaksalagatan 10, Uppsala", boards:6, price:"97 kr",
-    type:"Bristol Autoscoring", hours:"Mån–Tor 17–01, Fre–Lör 17–03",
+    type:"Bristol Autoscoring", hours:"Mån–Tor 17–01, Fre 16–03, Lör 13–03, Sön 13–01",
     open:true, verified:false, beer:"79 kr",
     note:"6 bristoltavlor med autoscoring."
   },
@@ -1475,8 +1483,8 @@ const bars = [
   {
     id:38, name:"Restaurang Hörnet", city:"Torslanda",
     lat:57.7106, lng:11.7770,
-    address:"Gamla Flygplatsvägen, Torslanda", boards:6, price:"Gratis",
-    type:"Bristoltavla", hours:"Dart onsdag och torsdag",
+    address:"Gamla Flygplatsvägen 18, Torslanda", boards:6, price:"Gratis",
+    type:"Bristoltavla", hours:"Ons & Tor 18–sent",
     open:true, verified:false, beer:"65 kr",
     note:"6 bristoltavlor. Gratis dart – öppet för dart onsdag & torsdag. 65 kr öl för medlemmar."
   },
@@ -1493,7 +1501,7 @@ const bars = [
     id:40, name:"Bistro Bangatan", city:"Göteborg",
     lat:57.6961, lng:11.9358,
     address:"Bangatan 21, Göteborg", boards:2, price:"Gratis",
-    type:"Bristoltavla", hours:"Sön–Tor 16–sent",
+    type:"Bristoltavla", hours:"Sön–Tor 16–22, Fre 15–01, Lör 15–01",
     open:true, verified:false, beer:"59 kr",
     note:"2 bristoltavlor. Gratis att spela!"
   },
@@ -1501,7 +1509,7 @@ const bars = [
     id:41, name:"Bollywood", city:"Göteborg",
     lat:57.7065, lng:11.9540,
     address:"Bangatan 8, Göteborg", boards:1, price:"Gratis",
-    type:"Bristoltavla", hours:"Tis–Sön 12–sent",
+    type:"Bristoltavla", hours:"Tis–Sön 12–22, Mån Stängt",
     open:true, verified:false, beer:"45 kr",
     note:"1 bristoltavla. Gratis att spela! Billig öl."
   },
@@ -1537,7 +1545,7 @@ const bars = [
     id:45, name:"Kvarteret", city:"Örebro",
     lat:59.2753, lng:15.2134,
     address:"Engelbrektsgatan 6, Örebro", boards:8, price:"Gratis (med egna pilar)",
-    type:"Bristoltavla", hours:"Tis–Tor 16–22, Fre 16–01, Lör 14–01",
+    type:"Bristoltavla", hours:"Tis–Tor 16–22, Fre 16–00, Lör 12–00, Sön 14–20",
     open:true, verified:false, beer:"60 kr",
     note:"8 bristoltavlor. Gratis att spela med egna pilar."
   },
