@@ -951,6 +951,7 @@
         <div class="filter-chip city-chip" onclick="setCity('Uddevalla', this)">Uddevalla</div>
         <div class="filter-chip city-chip" onclick="setCity('Örebro', this)">Örebro</div>
         <div class="filter-chip city-chip" onclick="setCity('Umeå', this)">Umeå</div>
+        <div class="filter-chip city-chip" onclick="setCity('Östersund', this)">Östersund</div>
       </div>
     </div>
     <div class="results-label" id="resultsLabel">Visar alla barer</div>
@@ -1623,6 +1624,15 @@ const bars = [
     open:true, verified:false, beer:"65 kr",
     note:"4 bristoltavlor. Gratis att spela med egna pilar."
   },
+  // ── ÖSTERSUND ──
+  {
+    id:51, name:"Tiki", city:"Östersund",
+    lat:63.1767, lng:14.6361,
+    address:"Tjalmargatan 1, Östersund", boards:2, price:"165 kr", priceType:"bana",
+    type:"Bristoltavla", hours:"Ons–Tor 10–21, Fre–Lör 10–00",
+    open:true, verified:false, beer:"85 kr",
+    note:"2 bristoltavlor."
+  },
   // ── UMEÅ ──
   {
     id:50, name:"O'Learys Umeå", city:"Umeå",
@@ -1802,6 +1812,7 @@ function setCity(city, el) {
     'Uddevalla': [[58.349, 11.934], 13],
     'Örebro': [[59.275, 15.210], 13],
     'Umeå': [[63.826, 20.263], 13],
+    'Östersund': [[63.177, 14.636], 13],
   };
   const cc = cityCoords[city];
   if (cc) map.flyTo(cc[0], cc[1], {duration:1});
