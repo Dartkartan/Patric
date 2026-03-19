@@ -1769,26 +1769,27 @@ function initBottomSheet() {
 
   let startY = 0, isDragging = false;
 
-  sidebar.addEventListener('click', (e) => {
-    if (e.target.closest('.bar-card, .filter-chip, .city-chip, .search-input')) return;
-    const rect = sidebar.getBoundingClientRect();
-    if (e.clientY - rect.top < 40) {
-      sidebar.classList.toggle('sheet-open');
-    }
-  });
-
+  // Tap on sidebar-top area (not on interactive elements) toggles sheet
   sidebar.addEventListener('click', (e) => {
     if (e.target.closest('.bar-card')) {
       setTimeout(() => sidebar.classList.remove('sheet-open'), 300);
+      return;
+    }
+    if (e.target.closest('.filter-chip, .city-chip, .search-input')) return;
+    // If tapping on the handle/sidebar-top area, toggle
+    if (e.target.closest('.sidebar-top') || !e.target.closest('.bar-list')) {
+      const rect = sidebar.getBoundingClientRect();
+      if (e.clientY - rect.top < 120) {
+        sidebar.classList.toggle('sheet-open');
+      }
     }
   });
 
+  // Swipe up/down on the entire visible part of closed sidebar
   sidebar.addEventListener('touchstart', (e) => {
-    // Only handle drag on the handle area (top 50px) or sidebar-top, not on scrollable content
-    const rect = sidebar.getBoundingClientRect();
-    const touchY = e.touches[0].clientY - rect.top;
-    const isOnScrollable = e.target.closest('.bar-list, .bar-card');
-    if (touchY < 50 && !isOnScrollable) {
+    const isOnScrollable = e.target.closest('.bar-list');
+    const isSheetOpen = sidebar.classList.contains('sheet-open');
+    if (!isSheetOpen || !isOnScrollable) {
       startY = e.touches[0].clientY;
       isDragging = true;
     } else {
