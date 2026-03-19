@@ -1630,6 +1630,7 @@ function initMap() {
 
   updateStats();
   filterBars();
+  applyStoredTheme();
 }
 
 function buildPopup(bar) {
@@ -1794,6 +1795,17 @@ function toggleMapTheme() {
     document.getElementById('themeToggle').textContent = '☀️';
   }
   isDarkMap = !isDarkMap;
+  localStorage.setItem('dartkartan-theme', isDarkMap ? 'dark' : 'light');
+}
+
+function applyStoredTheme() {
+  const stored = localStorage.getItem('dartkartan-theme');
+  if (stored === 'light') {
+    map.removeLayer(darkTile);
+    lightTile.addTo(map);
+    document.getElementById('themeToggle').textContent = '🌙';
+    isDarkMap = false;
+  }
 }
 
 function locateUser() {
