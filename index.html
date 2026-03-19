@@ -755,6 +755,8 @@
       cursor: pointer;
       transition: all 0.15s;
       text-align: center;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
     .multi-tab:hover { color: var(--text); }
     .multi-tab.active-tab { color: var(--text); background: #22222a; }
@@ -772,6 +774,8 @@
       user-select: none;
       text-align: center;
       position: relative;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
     .dart-num:hover { background: #2a2a34; }
     .dart-num:active { background: var(--accent); color: #0d0d0f; }
