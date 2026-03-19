@@ -1001,6 +1001,7 @@
         <div class="filter-chip city-chip" onclick="setCity('Sandviken', this)">Sandviken</div>
         <div class="filter-chip city-chip" onclick="setCity('Eskilstuna', this)">Eskilstuna</div>
         <div class="filter-chip city-chip" onclick="setCity('Karlskoga', this)">Karlskoga</div>
+        <div class="filter-chip city-chip" onclick="setCity('Karlstad', this)">Karlstad</div>
       </div>
     </div>
     <div class="results-label" id="resultsLabel">Visar alla barer</div>
@@ -1783,6 +1784,15 @@ const bars = [
     open:true, verified:false,
     note:"7 bristoltavlor. Gratis att spela."
   },
+  // ── KARLSTAD ──
+  {
+    id:58, name:"Dartstudion", city:"Karlstad",
+    lat:59.3793, lng:13.5036,
+    address:"Karlbergsgatan 2, Karlstad", boards:7, price:"Gratis", priceType:"bana",
+    type:"Bristoltavla", hours:"Tis 17–23, Tor 17–23",
+    open:true, verified:false, beer:"49 kr",
+    note:"7 bristoltavlor. Gratis att spela."
+  },
 
 ];
 
@@ -1990,6 +2000,7 @@ function setCity(city, el) {
     'Sandviken': [[60.620, 16.776], 13],
     'Eskilstuna': [[59.371, 16.509], 13],
     'Karlskoga': [[59.327, 14.521], 13],
+    'Karlstad': [[59.379, 13.504], 13],
   };
   const cc = cityCoords[city];
   if (cc) map.flyTo(cc[0], cc[1], {duration:1});
