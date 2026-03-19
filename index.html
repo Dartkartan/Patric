@@ -7,15 +7,15 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>Dartkartan – Hitta dartbarer nära dig | 40+ ställen i Sverige</title>
-  <meta name="description" content="Var kan man kasta dart? Dartkartan visar 40+ barer med darttavlor i Göteborg, Malmö, Stockholm, Uppsala och fler städer. Priser, öppettider, ölpriser och inbyggd dartscorer." />
+  <title>Dartkartan – Hitta dartbarer nära dig | 50+ ställen i Sverige</title>
+  <meta name="description" content="Var kan man kasta dart? Dartkartan visar 50+ barer med darttavlor i Göteborg, Malmö, Stockholm, Uppsala och fler städer. Priser, öppettider, ölpriser och inbyggd dartscorer." />
   <meta name="author" content="Dartkartan.se" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://dartkartan.se/" />
 
   <!-- Open Graph (Facebook, Discord m.m.) -->
   <meta property="og:title" content="Dartkartan – Hitta barer med darttavlor i Sverige" />
-  <meta property="og:description" content="Interaktiv karta över 40+ dartbarer i Sverige. Priser, öppettider, ölpriser och inbyggd scorer." />
+  <meta property="og:description" content="Interaktiv karta över 50+ dartbarer i Sverige. Priser, öppettider, ölpriser och inbyggd scorer." />
   <meta property="og:url" content="https://dartkartan.se/" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="sv_SE" />
@@ -23,7 +23,7 @@
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Dartkartan – Hitta barer med darttavlor i Sverige" />
-  <meta name="twitter:description" content="40+ dartbarer i Sverige. Priser, öppettider och inbyggd scorer." />
+  <meta name="twitter:description" content="50+ dartbarer i Sverige. Priser, öppettider och inbyggd scorer." />
 
   <!-- Strukturerad data för Google -->
   <script type="application/ld+json">
@@ -1675,15 +1675,6 @@ const bars = [
     open:true, verified:false, beer:"79 kr",
     note:"3 bristoltavlor vid hamnen."
   },
-  // ── VÄSTERVIK ──
-  {
-    id:30, name:"Västerviks Dartklubb", city:"Västervik",
-    lat:57.7584, lng:16.6373,
-    address:"Sjögatan 6, Västervik", boards:5, price:"20 kr",
-    type:"Bristoltavla", hours:"24/7",
-    open:true, verified:false, beer:"30 kr",
-    note:"5 bristoltavlor. Dartklubb – öppet dygnet runt!"
-  },
   // ── HALMSTAD ──
   {
     id:31, name:"O'Learys Halmstad", city:"Halmstad",
@@ -1692,15 +1683,6 @@ const bars = [
     type:"Bristol Autoscoring", hours:"Kontrollera på olearys.se",
     open:true, verified:false,
     note:"4 bristoltavlor med autoscoring."
-  },
-  // ── BORLÄNGE ──
-  {
-    id:32, name:"Borlänge Dart Club", city:"Borlänge",
-    lat:60.4774, lng:15.4313,
-    address:"Hantverkargatan 9, Borlänge", boards:14, price:"Gratis",
-    type:"Bristoltavla", hours:"Mån 17–20, Tor 17–22",
-    open:true, verified:false,
-    note:"14 bristoltavlor! Dartklubb med gratis spel."
   },
   // ── STOCKHOLM ──
   {
@@ -1868,15 +1850,6 @@ const bars = [
     open:true, verified:false, beer:"40–50 kr",
     note:"11 bristoltavlor. Gratis första gången, sedan medlemskap 150 kr/år."
   },
-  // ── SANDVIKEN ──
-  {
-    id:53, name:"Sandvikens Dart Klubb", city:"Sandviken",
-    lat:60.6198, lng:16.7756,
-    address:"Plangatan 4, Sandviken", boards:6, price:"Gratis/60 kr", priceType:"person",
-    type:"Bristoltavla", hours:"Tis 17–22, Tor 17–22",
-    open:true, verified:false, beer:"30 kr",
-    note:"6 bristoltavlor."
-  },
   // ── ESKILSTUNA ──
   {
     id:54, name:"Bowlers Eskilstuna", city:"Eskilstuna",
@@ -1902,15 +1875,6 @@ const bars = [
     type:"Bristoltavla", hours:"–",
     open:true, verified:false, beer:"69 kr",
     note:"6 bristoltavlor."
-  },
-  // ── KARLSKOGA ──
-  {
-    id:57, name:"Flamingo Dartklubb", city:"Karlskoga",
-    lat:59.3267, lng:14.5208,
-    address:"Bergsmansgatan 4, Karlskoga", boards:7, price:"Gratis",
-    type:"Bristoltavla", hours:"Se Facebooksida, Flamingo DC",
-    open:true, verified:false,
-    note:"7 bristoltavlor. Gratis att spela."
   },
   // ── KARLSTAD ──
   {
@@ -1957,6 +1921,30 @@ const clubs = [
     id:1, name:"Bowlers Dart Club", city:"Borås",
     barId:59, day:"Onsdag", time:"18:00–20:00", price:"50 kr/pers",
     contact:"", note:"Inga förkunskaper behövs."
+  },
+  {
+    id:2, name:"Västerviks Dartklubb", city:"Västervik",
+    barId:null, lat:57.7584, lng:16.6373,
+    day:"Dygnet runt", time:"24/7", price:"20 kr",
+    contact:"", note:"5 bristoltavlor. Öppet dygnet runt!"
+  },
+  {
+    id:3, name:"Borlänge Dart Club", city:"Borlänge",
+    barId:null, lat:60.4774, lng:15.4313,
+    day:"Måndag & Torsdag", time:"Mån 17–20, Tor 17–22", price:"Gratis",
+    contact:"", note:"14 bristoltavlor! Gratis spel."
+  },
+  {
+    id:4, name:"Sandvikens Dart Klubb", city:"Sandviken",
+    barId:null, lat:60.6198, lng:16.7756,
+    day:"Tisdag & Torsdag", time:"Tis 17–22, Tor 17–22", price:"Gratis/60 kr",
+    contact:"", note:"6 bristoltavlor."
+  },
+  {
+    id:5, name:"Flamingo Dartklubb", city:"Karlskoga",
+    barId:null, lat:59.3267, lng:14.5208,
+    day:"Se Facebook", time:"Se Facebooksida, Flamingo DC", price:"Gratis",
+    contact:"", note:"7 bristoltavlor. Gratis att spela."
   },
 ];
 
@@ -2252,7 +2240,7 @@ function renderClubList() {
   list.innerHTML = filtered.map(club => {
     const linkedBar = club.barId ? bars.find(b => b.id === club.barId) : null;
     return `
-      <div class="bar-card" onclick="${club.barId ? `selectBar(${club.barId})` : ''}">
+      <div class="bar-card" onclick="${club.barId ? `selectBar(${club.barId})` : (club.lat ? `map.setView([${club.lat},${club.lng}],13);markers['club-${club.id}'].openPopup()` : '')}">
         <div class="bar-name" style="color:#4ade80">🏆 ${club.name}</div>
         <div class="bar-city">📍 ${club.city}${linkedBar ? ` · ${linkedBar.name}` : ''}</div>
         <div class="bar-meta">
