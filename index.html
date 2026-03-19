@@ -1742,7 +1742,6 @@ function updateMarkers(data) {
 function updateStats() {
   document.getElementById('statTotal').textContent = bars.length;
   document.getElementById('statCities').textContent = new Set(bars.map(b => b.city)).size;
-  document.getElementById('statFree').textContent = bars.filter(b => b.price === 'Gratis').length;
 }
 
 // ──────────────────────────────────────────
