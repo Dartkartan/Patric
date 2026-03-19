@@ -1157,6 +1157,7 @@
             <option value="__other">Annan lokal (ej listad)</option>
           </select>
           <input type="text" name="spelar_pa_annat" id="formClubBarOther" placeholder="Adress" style="display:none;margin-top:6px" />
+          <input type="number" name="antal_tavlor" id="formClubBoards" placeholder="Antal tavlor" min="0" style="display:none;margin-top:6px" />
         </div>
       </div>
       <div class="form-group">
@@ -2581,7 +2582,9 @@ function populateClubBarSelect() {
 }
 
 function toggleClubBarOther(sel) {
-  document.getElementById('formClubBarOther').style.display = sel.value === '__other' ? '' : 'none';
+  const isOther = sel.value === '__other';
+  document.getElementById('formClubBarOther').style.display = isOther ? '' : 'none';
+  document.getElementById('formClubBoards').style.display = isOther ? '' : 'none';
 }
 
 function toggleClubPriceInput(sel) {
