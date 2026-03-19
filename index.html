@@ -2051,9 +2051,101 @@ function initMap() {
   applyStoredTheme();
 }
 
+// ──────────────────────────────────────────
+// AUTO OPEN/CLOSED BASED ON HOURS
+// ──────────────────────────────────────────
+function isOpenNow(hours) {
+  if (!hours) return null;
+  const h = hours.toLowerCase();
+  // Kan inte tolka — returnera null
+  if (/kontroll|kontakta|ring |efter bok|se facebook|hemsida|^–$/.test(h)) return null;
+  if (h.includes('24/7') || h.includes('dygnet')) return true;
+
+  const dayMap = {mån:1,tis:2,ons:3,tor:4,fre:5,lör:6,sön:0};
+  const dayNames = ['mån','tis','ons','tor','fre','lör','sön'];
+  const now = new Date();
+  const nowDay = now.getDay(); // 0=sön
+  const nowH = now.getHours();
+  const nowM = now.getMinutes();
+  const nowMin = nowH * 60 + nowM;
+
+  // Expandera dag-intervall: "Mån–Tor" → [1,2,3,4]
+  function expandDays(str) {
+    str = str.trim().toLowerCase();
+    const match = str.match(/^(.+?)\s*[\u2013\-]\s*(.+)$/);
+    if (match) {
+      const s = dayMap[match[1].substring(0,3)];
+      const e = dayMap[match[2].substring(0,3)];
+      if (s === undefined || e === undefined) return [];
+      const days = [];
+      let d = s;
+      for (let i = 0; i < 7; i++) {
+        days.push(d);
+        if (d === e) break;
+        d = (d + 1) % 7;
+      }
+      return days;
+    }
+    // Enskild dag eller kommaseparerade
+    const parts = str.split(/[,&]+/).map(p => p.trim());
+    const days = [];
+    parts.forEach(p => {
+      const key = p.substring(0,3);
+      if (dayMap[key] !== undefined) days.push(dayMap[key]);
+    });
+    return days;
+  }
+
+  // Tolka tid-sträng "16:30" eller "16" → minuter
+  function parseTime(t) {
+    t = t.trim().replace('sent','23').replace(/[\u2013\-]/g,'');
+    const m = t.match(/^(\d{1,2})[:\.]?(\d{2})?$/);
+    if (!m) return null;
+    return parseInt(m[1]) * 60 + (m[2] ? parseInt(m[2]) : 0);
+  }
+
+  // Dela upp hours i segment: "Mån–Tor 16–23, Fre 15–01"
+  const segments = hours.split(/,\s*(?=[A-ÖÅÄA-z])/);
+  for (const seg of segments) {
+    const s = seg.trim();
+    // Kolla om segmentet innehåller "Stängt"
+    if (/stängt/i.test(s)) {
+      const dayPart = s.replace(/\s*[:]*\s*stängt.*/i, '').trim();
+      const closedDays = expandDays(dayPart);
+      if (closedDays.includes(nowDay)) return false;
+      continue;
+    }
+    // Hitta dag-del och tid-del
+    const timeMatch = s.match(/(\d{1,2}[:\.]?\d{0,2})\s*[\u2013\-]\s*(\d{1,2}[:\.]?\d{0,2}|sent)/i);
+    if (!timeMatch) continue;
+    const dayPart = s.substring(0, s.indexOf(timeMatch[0])).trim();
+    let days;
+    if (dayPart) {
+      days = expandDays(dayPart);
+    } else {
+      // Inget dagprefix — gäller alla dagar
+      days = [0,1,2,3,4,5,6];
+    }
+    if (!days.includes(nowDay)) continue;
+    const open = parseTime(timeMatch[1]);
+    let close = parseTime(timeMatch[2]);
+    if (open === null || close === null) continue;
+    // Om stängningstid <= öppningstid → stänger efter midnatt
+    if (close <= open) close += 24 * 60;
+    if (nowMin >= open && nowMin < close) return true;
+    // Kolla om vi är i "efter midnatt"-fönstret
+    if (close > 24 * 60 && nowMin + 24 * 60 < close && nowMin < open) return true;
+  }
+  // Om vi hittade segment men ingen matchade → stängt
+  if (segments.some(s => /\d/.test(s))) return false;
+  return null;
+}
+
 function buildPopup(bar) {
-  const openHtml = bar.open
-    ? `<span class="popup-val green">Öppet</span>`
+  const liveOpen = isOpenNow(bar.hours);
+  const isOpen = liveOpen !== null ? liveOpen : bar.open;
+  const openHtml = isOpen
+    ? `<span class="popup-val green">Öppet nu</span>`
     : `<span class="popup-val" style="color:#ff4757">Stängt</span>`;
   const verifiedBadge = bar.verified ? `<span style="color:var(--accent);font-size:0.72rem">✓ Verifierat</span>` : '';
   return `
@@ -2219,17 +2311,20 @@ function renderList(data) {
     return;
   }
 
-  list.innerHTML = data.map(bar => `
+  list.innerHTML = data.map(bar => {
+    const live = isOpenNow(bar.hours);
+    const op = live !== null ? live : bar.open;
+    return `
     <div class="bar-card ${selectedId === bar.id ? 'active' : ''}" id="card-${bar.id}" onclick="selectBar(${bar.id})">
       <div class="bar-name">${bar.name}</div>
       <div class="bar-city">📍 ${bar.city}</div>
       <div class="bar-meta">
         <span class="badge price">💰 ${bar.price}</span>
         <span class="badge boards">🎯 ${bar.boards} tavlor</span>
-        <span class="badge ${bar.open ? 'open' : 'closed'}">${bar.open ? '● Öppet' : '● Stängt'}</span>
+        <span class="badge ${op ? 'open' : 'closed'}">${op ? '● Öppet' : '● Stängt'}</span>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 let activeListView = 'barer';
