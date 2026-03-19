@@ -1060,6 +1060,11 @@
       </div>
       <div class="stat-divider"></div>
       <div class="stat">
+        <span class="stat-num" id="statClubs">0</span>
+        <span class="stat-label">Klubbar</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
         <span class="stat-num" id="statCities">0</span>
         <span class="stat-label">Städer</span>
       </div>
@@ -2355,7 +2360,9 @@ function updateMarkers(data) {
 
 function updateStats() {
   document.getElementById('statTotal').textContent = bars.length;
-  document.getElementById('statCities').textContent = new Set(bars.map(b => b.city)).size;
+  document.getElementById('statClubs').textContent = clubs.length;
+  const allCities = [...bars.map(b => b.city), ...clubs.map(c => c.city)];
+  document.getElementById('statCities').textContent = new Set(allCities).size;
 }
 
 // ──────────────────────────────────────────
