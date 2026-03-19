@@ -507,13 +507,21 @@
       .multi-tab { font-size: 0.72rem; padding: 6px 2px 3px; }
       .dart-slot { min-width: 44px; font-size: 0.8rem; padding: 2px 5px; }
 
-      /* Scorer game: fixed layout, no scroll */
-      #scorerOverlay {
-        display: flex !important;
-        flex-direction: column;
+      /* Close button mobile */
+      #scorerOverlay > div > button:first-child {
+        position: fixed !important;
+        top: 0.5rem !important;
+        right: 0.5rem !important;
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 1.4rem !important;
+        z-index: 2002 !important;
       }
+
+      /* Scorer game: fixed layout, no scroll */
       #scorerOverlay[style*="display: block"] {
         display: flex !important;
+        flex-direction: column;
       }
       #scorerModal {
         display: flex;
