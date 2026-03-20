@@ -1051,6 +1051,7 @@
         <div class="filter-chip city-chip" onclick="setCity('Ulricehamn', this)">Ulricehamn</div>
         <div class="filter-chip city-chip" onclick="setCity('Lidköping', this)">Lidköping</div>
         <div class="filter-chip city-chip" onclick="setCity('Enköping', this)">Enköping</div>
+        <div class="filter-chip city-chip" onclick="setCity('Mölndal', this)">Mölndal</div>
       </div>
     </div>
     <div class="list-toggle">
@@ -1996,6 +1997,15 @@ const bars = [
     open:true, verified:false, beer:"",
     note:"1 bristoltavla."
   },
+  // ── MÖLNDAL ──
+  {
+    id:71, name:"John Scott's Mölndal", city:"Mölndal",
+    lat:57.6549, lng:12.0120,
+    address:"Storgatan 33, Mölndal", boards:2, price:"Gratis", priceType:"bana",
+    type:"Bristoltavla", hours:"Mån\u2013Tor 11:00\u201323:00, Fre 11:00\u201301:00, Lör 11:00\u201301:00, Sön 11:00\u201323:00",
+    open:true, verified:false, beer:"49 kr (storstark mån\u2013tor 11\u201317, fre 11\u201319)",
+    note:"2 bristoltavlor. Gratis dart. Öl 49 kr storstark vid happy hour."
+  },
 
 ];
 
@@ -2537,6 +2547,7 @@ function setCity(city, el) {
     'Ulricehamn': [[57.788, 13.409], 13],
     'Lidköping': [[58.503, 13.162], 13],
     'Enköping': [[59.646, 17.086], 13],
+    'Mölndal': [[57.655, 12.012], 13],
   };
   const cc = cityCoords[city];
   if (cc) map.flyTo(cc[0], cc[1], {duration:1});
