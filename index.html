@@ -2337,7 +2337,7 @@ function submitEdit() {
     öppettider: document.getElementById('editHours').value,
     kommentar: document.getElementById('editComment').value,
   };
-  fetch('https://formspree.io/f/mpqyknrp', {
+  fetch('https://dartkartan.se/api/submit', {
     method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)
   }).then(r => {
     if (r.ok) {
@@ -2385,7 +2385,7 @@ function submitEditClub() {
   data.append('kontakt', document.getElementById('editClubContact').value);
   data.append('kommentar', document.getElementById('editClubComment').value);
 
-  fetch('https://formspree.io/f/mpqyknrp', {
+  fetch('https://dartkartan.se/api/submit', {
     method: 'POST', body: data,
     headers: { 'Accept': 'application/json' }
   }).then(r => {
@@ -2739,7 +2739,7 @@ function submitClub(e) {
   data.append('_subject', 'Ny klubb: ' + name);
   data.append('typ', 'ny-klubb');
 
-  fetch('https://formspree.io/f/mpqyknrp', {
+  fetch('https://dartkartan.se/api/submit', {
     method: 'POST', body: data,
     headers: { 'Accept': 'application/json' }
   }).then(r => {
@@ -2767,7 +2767,7 @@ function submitBar(e) {
   // Skicka via Formspree
   const data = Object.fromEntries(new FormData(form));
   data._subject = 'Ny bar: ' + name;
-  fetch('https://formspree.io/f/mpqyknrp', {
+  fetch('https://dartkartan.se/api/submit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify(data)
