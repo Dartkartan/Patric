@@ -1451,7 +1451,7 @@
 </div>
 
 <!-- EDIT BAR MODAL -->
-<div id="editModal" class="edit-modal" style="display:none" onclick="if(event.target===this)closeEditModal()">
+<div id="editModal" class="edit-modal" style="display:none">
   <div class="edit-modal-box">
     <button class="edit-modal-close" onclick="closeEditModal()">&times;</button>
     <h3>Föreslå ändring</h3>
@@ -1472,7 +1472,7 @@
 </div>
 
 <!-- EDIT CLUB MODAL -->
-<div id="editClubModal" class="edit-modal" style="display:none" onclick="if(event.target===this)closeEditClubModal()">
+<div id="editClubModal" class="edit-modal" style="display:none">
   <div class="edit-modal-box">
     <button class="edit-modal-close" onclick="closeEditClubModal()">&times;</button>
     <h3>Föreslå ändring</h3>
@@ -2783,10 +2783,7 @@ function submitBar(e) {
   return false;
 }
 
-// close modal on overlay click
-document.getElementById('modalOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
+// modal stängs BARA via kryss-knappen (inte vid klick utanför)
 
 // ──────────────────────────────────────────
 // BOOT
