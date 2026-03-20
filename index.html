@@ -1025,6 +1025,7 @@
         <div class="filter-chip city-chip" onclick="setCity('Stockholm', this)">Stockholm</div>
         <div class="filter-chip city-chip" onclick="setCity('Uppsala', this)">Uppsala</div>
         <div class="filter-chip city-chip" onclick="setCity('Halmstad', this)">Halmstad</div>
+        <div class="filter-chip city-chip" onclick="setCity('Helsingborg', this)">Helsingborg</div>
         <div class="filter-chip city-chip" onclick="setCity('Borlänge', this)">Borlänge</div>
         <div class="filter-chip city-chip" onclick="setCity('Alingsås', this)">Alingsås</div>
         <div class="filter-chip city-chip" onclick="setCity('Lysekil', this)">Lysekil</div>
@@ -1947,7 +1948,7 @@ const bars = [
   {
     id:63, name:"Memory Lane Sportsbar", city:"Haninge",
     lat:59.1700, lng:18.1400,
-    address:"Runstensvägen 1, 136 46 Handen", boards:8, priceType:"bana",
+    address:"Runstensvägen 1, 136 46 Handen", boards:8, price:"", priceType:"bana",
     type:"Bristoltavla", hours:"Mån 10–21:30, Tis–Ons 10–23, Tor 10–23, Fre–Lör 10–01, Sön 11–21",
     open:true, verified:false, beer:"",
     note:"8 bristoltavlor. Ligger i Haninge Centrum."
@@ -2005,6 +2006,14 @@ const bars = [
     type:"Bristoltavla", hours:"Mån\u2013Tor 11:00\u201323:00, Fre 11:00\u201301:00, Lör 11:00\u201301:00, Sön 11:00\u201323:00",
     open:true, verified:false, beer:"49 kr (storstark mån\u2013tor 11\u201317, fre 11\u201319)",
     note:"2 bristoltavlor. Gratis dart. Öl 49 kr storstark vid happy hour."
+  },
+  {
+    id:72, name:"Pitcher's Helsingborg", city:"Helsingborg",
+    lat:56.0407, lng:12.7015,
+    address:"Södergatan 30, 252 18 Helsingborg", boards:3, price:"200 kr/55 min", priceType:"bana",
+    type:"Bristol Autoscoring", hours:"Mån\u2013Tor 11:30\u201323, Fre 11:30\u201301, Lör 12\u201301, Sön 13\u201323",
+    open:true, verified:false, beer:"",
+    note:"3 Bristol Autoscoring-tavlor. Sportbar & Aktivitetscenter."
   },
 
 ];
@@ -2548,6 +2557,7 @@ function setCity(city, el) {
     'Lidköping': [[58.503, 13.162], 13],
     'Enköping': [[59.646, 17.086], 13],
     'Mölndal': [[57.655, 12.012], 13],
+    'Helsingborg': [[56.041, 12.702], 13],
   };
   const cc = cityCoords[city];
   if (cc) map.flyTo(cc[0], cc[1], {duration:1});
