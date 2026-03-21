@@ -1045,10 +1045,12 @@
         <div class="filter-chip city-chip" onclick="setCity('Karlstad', this)">Karlstad</div>
         <div class="filter-chip city-chip" onclick="setCity('Borås', this)">Borås</div>
         <div class="filter-chip city-chip" onclick="setCity('Falkenberg', this)">Falkenberg</div>
+        <div class="filter-chip city-chip" onclick="setCity('Falköping', this)">Falköping</div>
         <div class="filter-chip city-chip" onclick="setCity('Eksjö', this)">Eksjö</div>
         <div class="filter-chip city-chip" onclick="setCity('Ludvika', this)">Ludvika</div>
         <div class="filter-chip city-chip" onclick="setCity('Haninge', this)">Haninge</div>
         <div class="filter-chip city-chip" onclick="setCity('Skene', this)">Skene</div>
+        <div class="filter-chip city-chip" onclick="setCity('Solna', this)">Solna</div>
         <div class="filter-chip city-chip" onclick="setCity('Ulricehamn', this)">Ulricehamn</div>
         <div class="filter-chip city-chip" onclick="setCity('Lidköping', this)">Lidköping</div>
         <div class="filter-chip city-chip" onclick="setCity('Enköping', this)">Enköping</div>
@@ -1517,10 +1519,10 @@ const bars = [
   {
     id:8, name:"Haket – Bar å Sånt", city:"Göteborg",
     lat:57.6991, lng:11.9425,
-    address:"Masthuggstorget 5", boards:6, price:"Gratis",
-    type:"Bristoltavla", hours:"Mån–Tor 16–sent, Fre 15–sent, Lör 14–sent, Sön Stängt",
+    address:"Masthuggstorget 5", boards:6, price:"100 kr/h", priceType:"bana",
+    type:"Bristoltavla", hours:"Mån\u2013Tor 16\u2013sent, Fre 15\u2013sent, Lör 14\u2013sent, Sön Stängt",
     open:true, verified:true,
-    note:"2 tavlor uppe + 4 i källaren. Pilar att låna i baren. Bokning rekommenderas – ofta kö!"
+    note:"2 tavlor uppe + 4 i källaren. Pilar att låna i baren. Bokning rekommenderas \u2013 ofta kö!"
   },
   {
     id:11, name:"Hard Rock Cafe Göteborg", city:"Göteborg",
@@ -1889,10 +1891,10 @@ const bars = [
   {
     id:54, name:"Bowlers Eskilstuna", city:"Eskilstuna",
     lat:59.3706, lng:16.5166,
-    address:"Rademachergatan 7, Eskilstuna", boards:7, price:"350 kr", priceType:"bana",
-    type:"Elektronisk", hours:"Sön–Mån 12–20, Tis–Tor 10–22, Fre–Lör 12–24",
+    address:"Rademachergatan 7, Eskilstuna", boards:7, price:"250 kr/h", priceType:"bana",
+    type:"Bristol Autoscoring (Scolia)", hours:"Sön\u2013Mån 12\u201320, Tis\u2013Tor 10\u201322, Fre\u2013Lör 12\u201324",
     open:true, verified:false, beer:"87 kr",
-    note:"7 elektroniska darttavlor."
+    note:"7 Bristol Autoscoring-tavlor med Scolia-räkning."
   },
   // ── STOCKHOLM (fler) ──
   {
@@ -1996,7 +1998,7 @@ const bars = [
     address:"Klastorpsvägen 11, Södertälje", boards:1, price:"80 kr/timme", priceType:"bana",
     type:"Bristoltavla", hours:"Mån\u2013Sön 14:00\u201302:00",
     open:true, verified:false, beer:"",
-    note:"1 bristoltavla."
+    note:"1 bristoltavla. Obligatorisk bokning: 070 438 99 16."
   },
   // ── MÖLNDAL ──
   {
@@ -2014,6 +2016,69 @@ const bars = [
     type:"Bristol Autoscoring", hours:"Mån\u2013Tor 11:30\u201323, Fre 11:30\u201301, Lör 12\u201301, Sön 13\u201323",
     open:true, verified:false, beer:"",
     note:"3 Bristol Autoscoring-tavlor. Sportbar & Aktivitetscenter."
+  },
+  // ── SÖDERTÄLJE (fler) ──
+  {
+    id:73, name:"BA Golf", city:"Södertälje",
+    lat:59.2075, lng:17.6414,
+    address:"Wedavägen 22A, Södertälje", boards:1, price:"50 kr/h", priceType:"bana",
+    type:"Bristol Autoscoring", hours:"Mån\u2013Sön 05\u201323",
+    open:true, verified:false, beer:"",
+    note:"Golflounge med darttavla. Bokning kan krävas."
+  },
+  // ── STOCKHOLM (Gamla Stan) ──
+  {
+    id:74, name:"Oilers DC", city:"Stockholm",
+    lat:59.3252, lng:18.0702,
+    address:"Trångsund 9, Gamla Stan, Stockholm", boards:8, price:"100 kr", priceType:"person",
+    type:"Bristoltavla", hours:"Fre 18\u201302, Sön 13\u201319",
+    open:true, verified:false, beer:"40 kr/50cl",
+    note:"Dartklubb. Cupanmälan."
+  },
+  // ── SOLNA ──
+  {
+    id:75, name:"East", city:"Solna",
+    lat:59.3640, lng:17.9962,
+    address:"Solnavägen 104B, Solna", boards:16, price:"", priceType:"bana",
+    type:"Bristoltavla", hours:"Mån\u2013Tor 10\u201323, Fre 10\u201301, Lör 13\u201301, Sön 13\u201322",
+    open:true, verified:false, beer:"",
+    note:"16 bristoltavlor. Gratis spel."
+  },
+  // ── STOCKHOLM (Södermalm) ──
+  {
+    id:76, name:"Söderbiljarden", city:"Stockholm",
+    lat:59.3127, lng:18.0788,
+    address:"Bondegatan 18, Stockholm", boards:10, price:"150 kr/h", priceType:"bana",
+    type:"Bristoltavla", hours:"Mån 16\u201323, Tis\u2013Tor 16\u201300, Fre\u2013Lör 16\u201301, Sön Stängt",
+    open:true, verified:false, beer:"65 kr",
+    note:"Gratis mån\u2013tors med egna pilar. Helg 200 kr/h."
+  },
+  // ── STOCKHOLM (Kungsholmen) ──
+  {
+    id:77, name:"Biljardpalatset", city:"Stockholm",
+    lat:59.3358, lng:18.0339,
+    address:"Sankt Eriksgatan 52, Stockholm", boards:12, price:"50 kr/h", priceType:"bana",
+    type:"Bristoltavla", hours:"Mån\u2013Tor 11\u201301, Fre\u2013Lör 11\u201303, Sön 11\u201301",
+    open:true, verified:false, beer:"65 kr",
+    note:"50 kr/h före 17, därefter 100 kr/h."
+  },
+  // ── FALKÖPING ──
+  {
+    id:78, name:"Bowlingstället Falköping", city:"Falköping",
+    lat:58.1617, lng:13.5635,
+    address:"Marknadsgatan 19, Falköping", boards:3, price:"200 kr/h", priceType:"bana",
+    type:"Bristol Autoscoring", hours:"Mån 10\u201321, Tis\u2013Ons 14\u201320, Tor 09\u201321, Fre 14\u201301, Lör 12\u201301, Sön 12\u201320",
+    open:true, verified:false, beer:"79 kr",
+    note:""
+  },
+  // ── GÖTEBORG (Ånäs) ──
+  {
+    id:79, name:"Ånesgrillen", city:"Göteborg",
+    lat:57.7211, lng:12.0066,
+    address:"Storkgatan 11, Göteborg", boards:2, price:"", priceType:"bana",
+    type:"Bristoltavla", hours:"Mån\u2013Sön 11\u201322",
+    open:true, verified:false, beer:"",
+    note:"Gratis spel."
   },
 
 ];
@@ -2558,6 +2623,8 @@ function setCity(city, el) {
     'Enköping': [[59.646, 17.086], 13],
     'Mölndal': [[57.655, 12.012], 13],
     'Helsingborg': [[56.041, 12.702], 13],
+    'Solna': [[59.364, 17.996], 13],
+    'Falköping': [[58.162, 13.563], 13],
   };
   const cc = cityCoords[city];
   if (cc) map.flyTo(cc[0], cc[1], {duration:1});
