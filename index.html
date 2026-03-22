@@ -1043,6 +1043,7 @@
         <div class="filter-chip city-chip" onclick="setCity('Eskilstuna', this)">Eskilstuna</div>
         <div class="filter-chip city-chip" onclick="setCity('Karlskoga', this)">Karlskoga</div>
         <div class="filter-chip city-chip" onclick="setCity('Karlstad', this)">Karlstad</div>
+        <div class="filter-chip city-chip" onclick="setCity('Kungsbacka', this)">Kungsbacka</div>
         <div class="filter-chip city-chip" onclick="setCity('Borås', this)">Borås</div>
         <div class="filter-chip city-chip" onclick="setCity('Falkenberg', this)">Falkenberg</div>
         <div class="filter-chip city-chip" onclick="setCity('Falköping', this)">Falköping</div>
@@ -2140,6 +2141,12 @@ const clubs = [
     day:"Måndag", time:"17:00\u201320:00", price:"Gratis",
     social:"https://www.facebook.com/groups/1114749182495987", web:"", phone:"", note:"Östra Järnvägsgatan 3, Enköping."
   },
+  {
+    id:10, name:"Kungsbacka Dartklubb", city:"Kungsbacka",
+    barId:null, lat:57.5045, lng:12.0712, boards:12,
+    day:"Torsdag", time:"18\u201321", price:"50 kr",
+    social:"https://www.facebook.com/groups/kungsbackadartklubb", web:"", phone:"", note:"Kabelgatan 5, Kungsbacka. 12 tavlor."
+  },
 ];
 
 let activeFilter = 'alla';
@@ -2625,6 +2632,7 @@ function setCity(city, el) {
     'Helsingborg': [[56.041, 12.702], 13],
     'Solna': [[59.364, 17.996], 13],
     'Falköping': [[58.162, 13.563], 13],
+    'Kungsbacka': [[57.505, 12.071], 13],
   };
   const cc = cityCoords[city];
   if (cc) map.flyTo(cc[0], cc[1], {duration:1});
