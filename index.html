@@ -1001,8 +1001,9 @@
     <span class="logo-text">DART<span>kartan</span></span>
   </a>
   <div class="header-right">
-    <button class="btn-add" onclick="openScorer()" style="background:var(--surface2);color:var(--accent);border:1px solid var(--accent);margin-right:0.5rem">🎯 Scorer</button>
-    <button class="btn-add" onclick="openModal()">+ Lägg till</button>
+    <button class="btn-add" onclick="openScorer()" style="background:var(--surface2);color:var(--accent);border:1px solid var(--accent);margin-right:0.5rem">🎯 <span data-i18n="scorer">Scorer</span></button>
+    <button class="btn-add" onclick="openModal()" data-i18n="addNew">+ Lägg till</button>
+    <button class="btn-add" id="langToggle" onclick="setLang(currentLang==='sv'?'en':'sv')" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);padding:0.4rem 0.6rem;font-size:1.1rem;min-width:auto" title="Switch language">🇬🇧</button>
   </div>
 </header>
 
@@ -1012,14 +1013,14 @@
     <div class="sidebar-top">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
-        <input class="search-input" id="searchInput" type="text" placeholder="Sök stad eller bar…" oninput="filterBars()" />
+        <input class="search-input" id="searchInput" type="text" placeholder="Sök stad eller bar…" data-i18n-placeholder="searchPlaceholder" oninput="filterBars()" />
       </div>
       <div class="filters">
-        <div class="filter-chip active" onclick="setFilter('alla', this)">Alla</div>
-        <div class="filter-chip" onclick="setFilter('gratis', this)">Gratis</div>
+        <div class="filter-chip active" onclick="setFilter('alla', this)" data-i18n="filterAll">Alla</div>
+        <div class="filter-chip" onclick="setFilter('gratis', this)" data-i18n="filterFree">Gratis</div>
       </div>
       <div class="filters" style="margin-top:6px">
-        <div class="filter-chip city-chip active" onclick="setCity('alla', this)">🇸🇪 Alla städer</div>
+        <div class="filter-chip city-chip active" onclick="setCity('alla', this)" data-i18n="allCities">🇸🇪 Alla städer</div>
         <div class="filter-chip city-chip" onclick="setCity('Göteborg', this)">Göteborg</div>
         <div class="filter-chip city-chip" onclick="setCity('Malmö', this)">Malmö</div>
         <div class="filter-chip city-chip" onclick="setCity('Stockholm', this)">Stockholm</div>
@@ -1059,10 +1060,10 @@
       </div>
     </div>
     <div class="list-toggle">
-      <button class="list-toggle-btn active" id="toggleBarer" onclick="showListView('barer')">🎯 Barer</button>
-      <button class="list-toggle-btn" id="toggleKlubbar" onclick="showListView('klubbar')">🏆 Klubbar</button>
+      <button class="list-toggle-btn active" id="toggleBarer" onclick="showListView('barer')">🎯 <span data-i18n="bars">Barer</span></button>
+      <button class="list-toggle-btn" id="toggleKlubbar" onclick="showListView('klubbar')">🏆 <span data-i18n="clubs">Klubbar</span></button>
     </div>
-    <div class="results-label" id="resultsLabel">Visar alla barer</div>
+    <div class="results-label" id="resultsLabel"></div>
     <div class="bar-list" id="barList"></div>
     <div class="bar-list" id="clubList" style="display:none"></div>
   </aside>
@@ -1085,8 +1086,8 @@
       </div>
     </div>
     <div id="map"></div>
-    <button class="btn-locate" onclick="locateUser()" title="Hitta mig">📍</button>
-    <button class="btn-theme" onclick="toggleMapTheme()" id="themeToggle" title="Byt kartläge">☀️</button>
+    <button class="btn-locate" onclick="locateUser()" data-i18n-title="locateMe" title="Hitta mig">📍</button>
+    <button class="btn-theme" onclick="toggleMapTheme()" id="themeToggle" data-i18n-title="toggleTheme" title="Byt kartläge">☀️</button>
   </div>
 </div>
 <button class="mobile-bar-toggle" style="display:none" id="mobileBarToggle" onclick="openMobileSidebar()">🎯 VISA BARER & KLUBBAR</button>
@@ -1096,39 +1097,39 @@
   <div class="modal">
     <button class="btn-close" onclick="closeModal()">✕</button>
     <div class="form-tabs">
-      <div class="form-tab active" id="formTabBar" onclick="switchFormTab('bar')">🎯 Lägg till bar</div>
-      <div class="form-tab" id="formTabClub" onclick="switchFormTab('club')">🏆 Lägg till klubb</div>
+      <div class="form-tab active" id="formTabBar" onclick="switchFormTab('bar')">🎯 <span data-i18n="addBar">Lägg till bar</span></div>
+      <div class="form-tab" id="formTabClub" onclick="switchFormTab('club')">🏆 <span data-i18n="addClub">Lägg till klubb</span></div>
     </div>
     <form id="barForm" name="ny-bar" method="POST" onsubmit="return submitBar(event)">
       <div class="form-group">
-        <label>Barens namn</label>
+        <label data-i18n="barName">Barens namn</label>
         <input type="text" name="namn" id="formName" placeholder="Dartkartan" required />
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Stad</label>
+          <label data-i18n="city">Stad</label>
           <input type="text" name="stad" id="formCity" placeholder="Göteborg" required />
         </div>
         <div class="form-group">
-          <label>Antal tavlor</label>
+          <label data-i18n="numBoards">Antal tavlor</label>
           <input type="number" name="tavlor" id="formBoards" placeholder="2" min="1" required />
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Pris</label>
+          <label data-i18n="priceLabel">Pris</label>
           <input type="text" name="pris" id="formPrice" placeholder="Gratis / 20 kr" />
         </div>
         <div class="form-group">
-          <label>Pristyp</label>
+          <label data-i18n="priceType">Pristyp</label>
           <select name="pristyp" id="formPriceType">
-            <option value="bana">Per bana</option>
-            <option value="person">Per person</option>
-            <option value="gratis">Gratis</option>
+            <option value="bana" data-i18n="perLaneOption">Per bana</option>
+            <option value="person" data-i18n="perPersonOption">Per person</option>
+            <option value="gratis" data-i18n="freeOption">Gratis</option>
           </select>
         </div>
         <div class="form-group">
-          <label>Taveltyp</label>
+          <label data-i18n="boardType">Taveltyp</label>
           <select name="tavletyp" id="formType">
             <option value="Bristol">Bristol</option>
             <option value="Bristol Autoscoring">Bristol Autoscoring</option>
@@ -1137,79 +1138,79 @@
         </div>
       </div>
       <div class="form-group">
-        <label>Adress</label>
+        <label data-i18n="address">Adress</label>
         <input type="text" name="adress" id="formAddress" placeholder="Storgatan 1" required />
       </div>
       <div class="form-group">
-        <label>Öppettider (fritext)</label>
+        <label data-i18n="hoursFreetext">Öppettider (fritext)</label>
         <input type="text" name="oppettider" id="formHours" placeholder="Mån–Fre 16–02, Lör–Sön 14–03" />
       </div>
       <div class="form-group">
-        <label>Ölpris (40–50 cl)</label>
+        <label data-i18n="beerPrice">Ölpris (40–50 cl)</label>
         <input type="text" name="olpris" id="formBeerPrice" placeholder="89 kr" />
       </div>
-      <button type="submit" class="btn-submit">Skicka in 🎯</button>
+      <button type="submit" class="btn-submit" data-i18n="submit">Skicka in 🎯</button>
     </form>
     <form id="clubForm" name="ny-klubb" method="POST" onsubmit="return submitClub(event)" style="display:none">
       <div class="form-group">
-        <label>Klubbens namn</label>
+        <label data-i18n="clubName">Klubbens namn</label>
         <input type="text" name="klubbnamn" id="formClubName" placeholder="Dartkartan Dart Club" required />
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Stad</label>
+          <label data-i18n="city">Stad</label>
           <input type="text" name="stad" id="formClubCity" placeholder="Göteborg" required />
         </div>
         <div class="form-group">
-          <label>Spelar på</label>
+          <label data-i18n="playsAtLabel">Spelar på</label>
           <select name="spelar_pa" id="formClubBar" onchange="toggleClubBarOther(this)" required>
-            <option value="">— Välj bar —</option>
-            <option value="__other">Annan lokal (ej listad)</option>
+            <option value="" data-i18n="selectBar">— Välj bar —</option>
+            <option value="__other" data-i18n="otherVenue">Annan lokal (ej listad)</option>
           </select>
-          <input type="text" name="spelar_pa_annat" id="formClubBarOther" placeholder="Adress" style="display:none;margin-top:6px" />
-          <input type="number" name="antal_tavlor" id="formClubBoards" placeholder="Antal tavlor" min="0" style="display:none;margin-top:6px" />
+          <input type="text" name="spelar_pa_annat" id="formClubBarOther" data-i18n-placeholder="address" placeholder="Adress" style="display:none;margin-top:6px" />
+          <input type="number" name="antal_tavlor" id="formClubBoards" data-i18n-placeholder="numBoards" placeholder="Antal tavlor" min="0" style="display:none;margin-top:6px" />
         </div>
       </div>
       <div class="form-group">
-        <label>Speldagar & tider</label>
+        <label data-i18n="playDays">Speldagar & tider</label>
         <div class="club-days-grid" id="clubDaysGrid">
-          <div class="club-day-row"><input type="checkbox" name="dag_man" value="Måndag" id="cb_man"><label for="cb_man">Måndag</label><input type="text" name="tid_man" placeholder="18:00–21:00" class="club-day-time" disabled /></div>
-          <div class="club-day-row"><input type="checkbox" name="dag_tis" value="Tisdag" id="cb_tis"><label for="cb_tis">Tisdag</label><input type="text" name="tid_tis" placeholder="18:00–21:00" class="club-day-time" disabled /></div>
-          <div class="club-day-row"><input type="checkbox" name="dag_ons" value="Onsdag" id="cb_ons"><label for="cb_ons">Onsdag</label><input type="text" name="tid_ons" placeholder="18:00–21:00" class="club-day-time" disabled /></div>
-          <div class="club-day-row"><input type="checkbox" name="dag_tor" value="Torsdag" id="cb_tor"><label for="cb_tor">Torsdag</label><input type="text" name="tid_tor" placeholder="18:00–21:00" class="club-day-time" disabled /></div>
-          <div class="club-day-row"><input type="checkbox" name="dag_fre" value="Fredag" id="cb_fre"><label for="cb_fre">Fredag</label><input type="text" name="tid_fre" placeholder="18:00–21:00" class="club-day-time" disabled /></div>
-          <div class="club-day-row"><input type="checkbox" name="dag_lor" value="Lördag" id="cb_lor"><label for="cb_lor">Lördag</label><input type="text" name="tid_lor" placeholder="18:00–21:00" class="club-day-time" disabled /></div>
-          <div class="club-day-row"><input type="checkbox" name="dag_son" value="Söndag" id="cb_son"><label for="cb_son">Söndag</label><input type="text" name="tid_son" placeholder="18:00–21:00" class="club-day-time" disabled /></div>
+          <div class="club-day-row"><input type="checkbox" name="dag_man" value="Måndag" id="cb_man"><label for="cb_man" data-i18n="monday">Måndag</label><input type="text" name="tid_man" placeholder="18:00–21:00" class="club-day-time" disabled /></div>
+          <div class="club-day-row"><input type="checkbox" name="dag_tis" value="Tisdag" id="cb_tis"><label for="cb_tis" data-i18n="tuesday">Tisdag</label><input type="text" name="tid_tis" placeholder="18:00–21:00" class="club-day-time" disabled /></div>
+          <div class="club-day-row"><input type="checkbox" name="dag_ons" value="Onsdag" id="cb_ons"><label for="cb_ons" data-i18n="wednesday">Onsdag</label><input type="text" name="tid_ons" placeholder="18:00–21:00" class="club-day-time" disabled /></div>
+          <div class="club-day-row"><input type="checkbox" name="dag_tor" value="Torsdag" id="cb_tor"><label for="cb_tor" data-i18n="thursday">Torsdag</label><input type="text" name="tid_tor" placeholder="18:00–21:00" class="club-day-time" disabled /></div>
+          <div class="club-day-row"><input type="checkbox" name="dag_fre" value="Fredag" id="cb_fre"><label for="cb_fre" data-i18n="friday">Fredag</label><input type="text" name="tid_fre" placeholder="18:00–21:00" class="club-day-time" disabled /></div>
+          <div class="club-day-row"><input type="checkbox" name="dag_lor" value="Lördag" id="cb_lor"><label for="cb_lor" data-i18n="saturday">Lördag</label><input type="text" name="tid_lor" placeholder="18:00–21:00" class="club-day-time" disabled /></div>
+          <div class="club-day-row"><input type="checkbox" name="dag_son" value="Söndag" id="cb_son"><label for="cb_son" data-i18n="sunday">Söndag</label><input type="text" name="tid_son" placeholder="18:00–21:00" class="club-day-time" disabled /></div>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Prismodell</label>
+          <label data-i18n="priceModel">Prismodell</label>
           <select name="prismodell" id="formClubPriceType" required onchange="toggleClubPriceInput(this)">
-            <option value="">— Välj —</option>
-            <option value="Gratis">Gratis</option>
-            <option value="Pris per gång">Pris per gång</option>
-            <option value="Medlemskap">Medlemskap</option>
+            <option value="" data-i18n="selectOption">— Välj —</option>
+            <option value="Gratis" data-i18n="free">Gratis</option>
+            <option value="Pris per gång" data-i18n="pricePerTime">Pris per gång</option>
+            <option value="Medlemskap" data-i18n="membership">Medlemskap</option>
           </select>
         </div>
         <div class="form-group" id="formClubPriceGroup" style="display:none">
-          <label>Belopp</label>
+          <label data-i18n="amount">Belopp</label>
           <input type="text" name="pris" id="formClubPrice" placeholder="kr/år" />
         </div>
       </div>
       <div class="form-group">
-        <label>Sociala medier</label>
+        <label data-i18n="socialMedia">Sociala medier</label>
         <input type="text" name="sociala_medier" id="formClubSocial" placeholder="ex facebook.com/dartkartan" />
       </div>
       <div class="form-group">
-        <label>Hemsida</label>
+        <label data-i18n="website">Hemsida</label>
         <input type="text" name="hemsida" id="formClubWeb" placeholder="ex dartkartan.se" />
       </div>
       <div class="form-group">
-        <label>Telefon</label>
+        <label data-i18n="phone">Telefon</label>
         <input type="text" name="telefon" id="formClubPhone" placeholder="ex 070- T20 T20 Bull" />
       </div>
-      <button type="submit" class="btn-submit">Skicka in 🏆</button>
+      <button type="submit" class="btn-submit" data-i18n="submit">Skicka in 🏆</button>
     </form>
   </div>
 </div>
@@ -1457,20 +1458,20 @@
 <div id="editModal" class="edit-modal" style="display:none">
   <div class="edit-modal-box">
     <button class="edit-modal-close" onclick="closeEditModal()">&times;</button>
-    <h3>Föreslå ändring</h3>
+    <h3 data-i18n="suggestChange">Föreslå ändring</h3>
     <p style="color:var(--muted);font-size:0.8rem;margin:4px 0 0">för <strong id="editBarName"></strong></p>
     <input type="hidden" id="editBarId">
-    <label>Antal tavlor</label>
+    <label data-i18n="editBoardsLabel">Antal tavlor</label>
     <input id="editBoards" type="number" min="1" placeholder="t.ex. 4">
-    <label>Pris</label>
+    <label data-i18n="priceLabel">Pris</label>
     <input id="editPrice" type="text" placeholder="t.ex. 100 kr/h">
-    <label>Ölpris (40–50cl)</label>
+    <label data-i18n="beerLabel">Ölpris (40–50cl)</label>
     <input id="editBeer" type="text" placeholder="t.ex. 69 kr">
-    <label>Öppettider</label>
+    <label data-i18n="editHoursLabel">Öppettider</label>
     <textarea id="editHours" placeholder="t.ex. Mån–Fre 16–01, Lör 12–01"></textarea>
-    <label>Övrig kommentar</label>
-    <textarea id="editComment" placeholder="Valfritt – beskriv vad som ändrats"></textarea>
-    <button class="edit-modal-submit" onclick="submitEdit()">Skicka förslag</button>
+    <label data-i18n="comment">Övrig kommentar</label>
+    <textarea id="editComment" data-i18n-placeholder="commentPlaceholder" placeholder="Valfritt – beskriv vad som ändrats"></textarea>
+    <button class="edit-modal-submit" onclick="submitEdit()" data-i18n="sendSuggestion">Skicka förslag</button>
   </div>
 </div>
 
@@ -1478,24 +1479,307 @@
 <div id="editClubModal" class="edit-modal" style="display:none">
   <div class="edit-modal-box">
     <button class="edit-modal-close" onclick="closeEditClubModal()">&times;</button>
-    <h3>Föreslå ändring</h3>
+    <h3 data-i18n="suggestChange">Föreslå ändring</h3>
     <p style="color:var(--muted);font-size:0.8rem;margin:4px 0 0">för <strong id="editClubName"></strong></p>
     <input type="hidden" id="editClubId">
-    <label>Dag</label>
+    <label data-i18n="day">Dag</label>
     <input id="editClubDay" type="text" placeholder="t.ex. Tisdagar">
-    <label>Tid</label>
+    <label data-i18n="time">Tid</label>
     <input id="editClubTime" type="text" placeholder="t.ex. 18:00–21:00">
-    <label>Pris</label>
+    <label data-i18n="priceLabel">Pris</label>
     <input id="editClubPrice" type="text" placeholder="t.ex. 50 kr/pers">
-    <label>Kontakt</label>
+    <label data-i18n="contact">Kontakt</label>
     <input id="editClubContact" type="text" placeholder="Facebook/hemsida/telefon">
-    <label>Övrig kommentar</label>
-    <textarea id="editClubComment" placeholder="Valfritt – beskriv vad som ändrats"></textarea>
-    <button class="edit-modal-submit" onclick="submitEditClub()">Skicka förslag</button>
+    <label data-i18n="comment">Övrig kommentar</label>
+    <textarea id="editClubComment" data-i18n-placeholder="commentPlaceholder" placeholder="Valfritt – beskriv vad som ändrats"></textarea>
+    <button class="edit-modal-submit" onclick="submitEditClub()" data-i18n="sendSuggestion">Skicka förslag</button>
   </div>
 </div>
 
 <script>
+// ──────────────────────────────────────────
+// i18n – LANGUAGE SUPPORT
+// ──────────────────────────────────────────
+let currentLang = localStorage.getItem('lang') || 'sv';
+
+const i18n = {
+  sv: {
+    // Header
+    scorer: 'Scorer',
+    addNew: '+ Lägg till',
+    // Search & filters
+    searchPlaceholder: 'Sök stad eller bar…',
+    filterAll: 'Alla',
+    filterFree: 'Gratis',
+    allCities: '🇸🇪 Alla städer',
+    // Sidebar
+    bars: 'Barer',
+    clubs: 'Klubbar',
+    cities: 'Städer',
+    showingBars: (n, total) => `Visar ${n} av ${total} barer`,
+    showingClubs: (n, total) => `Visar ${n} av ${total} klubbar`,
+    noMatchBars: 'Inga barer matchar sökningen 🎯',
+    noMatchClubs: 'Inga klubbar matchar sökningen 🏆',
+    mobileToggle: '🎯 VISA BARER & KLUBBAR',
+    boards: 'tavlor',
+    openNow: 'Öppet nu',
+    openLabel: 'Öppet',
+    closed: 'Stängt',
+    // Map buttons
+    locateMe: 'Hitta mig',
+    toggleTheme: 'Byt kartläge',
+    // Popup
+    status: 'Status',
+    boardsLabel: 'Tavlor',
+    price: 'Pris',
+    beerLabel: 'Öl (40–50cl)',
+    hoursLabel: 'Öppettider',
+    directions: 'Vägbeskrivning',
+    suggestEdit: 'Föreslå ändring',
+    clubsPlayHere: 'Klubbar som spelar här',
+    playsAt: 'Spelar på',
+    day: 'Dag',
+    time: 'Tid',
+    verified: 'Verifierat',
+    disclaimer: 'Vi reserverar oss för eventuella felaktigheter i uppgifterna. Kontakta stället för att bekräfta priser och öppettider.',
+    disclaimerShort: 'Vi reserverar oss för eventuella felaktigheter i uppgifterna.',
+    perLane: 'per bana',
+    perPerson: 'per person',
+    // Add bar form
+    addBar: 'Lägg till bar',
+    addClub: 'Lägg till klubb',
+    barName: 'Barens namn',
+    city: 'Stad',
+    numBoards: 'Antal tavlor',
+    priceLabel: 'Pris',
+    priceType: 'Pristyp',
+    perLaneOption: 'Per bana',
+    perPersonOption: 'Per person',
+    freeOption: 'Gratis',
+    boardType: 'Taveltyp',
+    address: 'Adress',
+    hoursFreetext: 'Öppettider (fritext)',
+    beerPrice: 'Ölpris (40–50 cl)',
+    submit: 'Skicka in',
+    // Add club form
+    clubName: 'Klubbens namn',
+    playsAtLabel: 'Spelar på',
+    selectBar: '— Välj bar —',
+    otherVenue: 'Annan lokal (ej listad)',
+    playDays: 'Speldagar & tider',
+    monday: 'Måndag', tuesday: 'Tisdag', wednesday: 'Onsdag',
+    thursday: 'Torsdag', friday: 'Fredag', saturday: 'Lördag', sunday: 'Söndag',
+    priceModel: 'Prismodell',
+    selectOption: '— Välj —',
+    free: 'Gratis',
+    pricePerTime: 'Pris per gång',
+    membership: 'Medlemskap',
+    amount: 'Belopp',
+    socialMedia: 'Sociala medier',
+    website: 'Hemsida',
+    phone: 'Telefon',
+    // Edit modal
+    suggestChange: 'Föreslå ändring',
+    editBoardsLabel: 'Antal tavlor',
+    editHoursLabel: 'Öppettider',
+    comment: 'Övrig kommentar',
+    commentPlaceholder: 'Valfritt – beskriv vad som ändrats',
+    sendSuggestion: 'Skicka förslag',
+    contact: 'Kontakt',
+    close: 'Stäng',
+    // Edit success
+    thankYou: 'Tack för ditt förslag!',
+    editReceived: 'Vi har tagit emot din ändring och granskar den.',
+    // Alerts
+    selectDay: 'Välj minst en speldag!',
+    somethingWrong: 'Något gick fel. Försök igen!',
+    // Scorer
+    playAgain: 'Spela igen',
+    newGame: 'Nytt spel',
+    startGame: 'Starta spelet',
+    bestOf: 'Bäst av',
+    firstTo: 'Först till',
+    legs: 'Legs',
+    sets: 'Sets',
+    straightIn: 'Rakt in',
+    doubleIn: 'Dubbel in',
+    tripleIn: 'Trippel in',
+    doubleOut: 'Dubbel ut',
+    tripleOut: 'Trippel ut',
+    checkoutPct: 'Utgång %',
+    checkoutTooltip: 'Visa sannolikhet att checka ut',
+    perDart: 'Per pil',
+    manual: 'Manuell',
+    scorePlaceholder: 'Poäng (0–180)',
+    undo: 'Ångra',
+    undoLast: 'Ångra senaste pilen',
+    avg: 'Snitt',
+    darts: 'pilar',
+    round: 'Omgång',
+    set: 'Set',
+    leg: 'Leg',
+    show: 'Visa',
+    hide: 'Dölj',
+    bust: (name, score) => `💥 Bust! ${name} behåller ${score}.`,
+    winsLeg: (name, legs, needed) => `🎯 ${name} vinner leg! (${legs}/${needed})`,
+    winsSet: (name, sets, needed) => `🎉 ${name} vinner setet! (${sets}/${needed})`,
+    wins: (name) => `${name} vinner! 🏆`,
+    requireOpen: (rule) => `${rule} krävs för att öppna!`,
+    enterScore: 'Ange 0–180.',
+    clickToRename: 'Klicka för att byta namn',
+  },
+  en: {
+    scorer: 'Scorer',
+    addNew: '+ Add',
+    searchPlaceholder: 'Search city or bar…',
+    filterAll: 'All',
+    filterFree: 'Free',
+    allCities: '🇸🇪 All cities',
+    bars: 'Bars',
+    clubs: 'Clubs',
+    cities: 'Cities',
+    showingBars: (n, total) => `Showing ${n} of ${total} bars`,
+    showingClubs: (n, total) => `Showing ${n} of ${total} clubs`,
+    noMatchBars: 'No bars match your search 🎯',
+    noMatchClubs: 'No clubs match your search 🏆',
+    mobileToggle: '🎯 SHOW BARS & CLUBS',
+    boards: 'boards',
+    openNow: 'Open now',
+    openLabel: 'Open',
+    closed: 'Closed',
+    locateMe: 'Find me',
+    toggleTheme: 'Toggle theme',
+    status: 'Status',
+    boardsLabel: 'Boards',
+    price: 'Price',
+    beerLabel: 'Beer (40–50cl)',
+    hoursLabel: 'Opening hours',
+    directions: 'Directions',
+    suggestEdit: 'Suggest edit',
+    clubsPlayHere: 'Clubs playing here',
+    playsAt: 'Plays at',
+    day: 'Day',
+    time: 'Time',
+    verified: 'Verified',
+    disclaimer: 'We cannot guarantee the accuracy of this information. Please contact the venue to confirm prices and opening hours.',
+    disclaimerShort: 'We cannot guarantee the accuracy of this information.',
+    perLane: 'per lane',
+    perPerson: 'per person',
+    addBar: 'Add bar',
+    addClub: 'Add club',
+    barName: 'Bar name',
+    city: 'City',
+    numBoards: 'Number of boards',
+    priceLabel: 'Price',
+    priceType: 'Price type',
+    perLaneOption: 'Per lane',
+    perPersonOption: 'Per person',
+    freeOption: 'Free',
+    boardType: 'Board type',
+    address: 'Address',
+    hoursFreetext: 'Opening hours (free text)',
+    beerPrice: 'Beer price (40–50 cl)',
+    submit: 'Submit',
+    clubName: 'Club name',
+    playsAtLabel: 'Plays at',
+    selectBar: '— Select bar —',
+    otherVenue: 'Other venue (not listed)',
+    playDays: 'Play days & times',
+    monday: 'Monday', tuesday: 'Tuesday', wednesday: 'Wednesday',
+    thursday: 'Thursday', friday: 'Friday', saturday: 'Saturday', sunday: 'Sunday',
+    priceModel: 'Price model',
+    selectOption: '— Select —',
+    free: 'Free',
+    pricePerTime: 'Price per session',
+    membership: 'Membership',
+    amount: 'Amount',
+    socialMedia: 'Social media',
+    website: 'Website',
+    phone: 'Phone',
+    suggestChange: 'Suggest edit',
+    editBoardsLabel: 'Number of boards',
+    editHoursLabel: 'Opening hours',
+    comment: 'Other comments',
+    commentPlaceholder: 'Optional – describe what changed',
+    sendSuggestion: 'Send suggestion',
+    contact: 'Contact',
+    close: 'Close',
+    thankYou: 'Thank you for your suggestion!',
+    editReceived: 'We have received your edit and will review it.',
+    selectDay: 'Select at least one play day!',
+    somethingWrong: 'Something went wrong. Please try again!',
+    playAgain: 'Play again',
+    newGame: 'New game',
+    startGame: 'Start game',
+    bestOf: 'Best of',
+    firstTo: 'First to',
+    legs: 'Legs',
+    sets: 'Sets',
+    straightIn: 'Straight in',
+    doubleIn: 'Double in',
+    tripleIn: 'Triple in',
+    doubleOut: 'Double out',
+    tripleOut: 'Triple out',
+    checkoutPct: 'Checkout %',
+    checkoutTooltip: 'Show checkout probability',
+    perDart: 'Per dart',
+    manual: 'Manual',
+    scorePlaceholder: 'Score (0–180)',
+    undo: 'Undo',
+    undoLast: 'Undo last dart',
+    avg: 'Avg',
+    darts: 'darts',
+    round: 'Round',
+    set: 'Set',
+    leg: 'Leg',
+    show: 'Show',
+    hide: 'Hide',
+    bust: (name, score) => `💥 Bust! ${name} stays on ${score}.`,
+    winsLeg: (name, legs, needed) => `🎯 ${name} wins the leg! (${legs}/${needed})`,
+    winsSet: (name, sets, needed) => `🎉 ${name} wins the set! (${sets}/${needed})`,
+    wins: (name) => `${name} wins! 🏆`,
+    requireOpen: (rule) => `${rule} required to open!`,
+    enterScore: 'Enter 0–180.',
+    clickToRename: 'Click to rename',
+  }
+};
+
+function t(key) { return i18n[currentLang][key] || i18n.sv[key] || key; }
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (typeof val === 'string') el.textContent = val;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    el.title = t(el.getAttribute('data-i18n-title'));
+  });
+  // Update dynamic content
+  if (typeof filterBars === 'function') {
+    if (activeListView === 'barer') filterBars();
+    else renderClubList();
+  }
+  // Update stats labels
+  document.querySelectorAll('.stat-label').forEach(el => {
+    const id = el.parentElement.querySelector('.stat-num')?.id;
+    if (id === 'statTotal') el.textContent = t('bars');
+    if (id === 'statClubs') el.textContent = t('clubs');
+    if (id === 'statCities') el.textContent = t('cities');
+  });
+  // Update mobile toggle
+  const mob = document.getElementById('mobileBarToggle');
+  if (mob) mob.textContent = t('mobileToggle');
+  // Update lang button
+  const btn = document.getElementById('langToggle');
+  if (btn) btn.textContent = currentLang === 'sv' ? '🇬🇧' : '🇸🇪';
+}
+
 // ──────────────────────────────────────────
 // DATA – svenska barer med dartavlor
 // ──────────────────────────────────────────
@@ -2314,42 +2598,42 @@ function buildPopup(bar) {
   const liveOpen = isOpenNow(bar.hours);
   const isOpen = liveOpen !== null ? liveOpen : bar.open;
   const openHtml = isOpen
-    ? `<span class="popup-val green">Öppet nu</span>`
-    : `<span class="popup-val" style="color:#ff4757">Stängt</span>`;
-  const verifiedBadge = bar.verified ? `<span style="color:var(--accent);font-size:0.72rem">✓ Verifierat</span>` : '';
+    ? `<span class="popup-val green">${t('openNow')}</span>`
+    : `<span class="popup-val" style="color:#ff4757">${t('closed')}</span>`;
+  const verifiedBadge = bar.verified ? `<span style="color:var(--accent);font-size:0.72rem">✓ ${t('verified')}</span>` : '';
   return `
     <div class="popup-inner">
       <div class="popup-name">${bar.name} ${verifiedBadge}</div>
       <div class="popup-city">📍 ${bar.address}, ${bar.city}</div>
-      <div class="popup-row"><span class="popup-label">Status</span>${openHtml}</div>
-      <div class="popup-row"><span class="popup-label">Tavlor</span><span class="popup-val">${bar.boards} st (${bar.type})</span></div>
-      <div class="popup-row"><span class="popup-label">Pris</span><span class="popup-val yellow">${bar.price}${bar.priceType ? ` (per ${bar.priceType})` : ''}</span></div>
-      ${bar.beer ? `<div class="popup-row"><span class="popup-label">Öl (40–50cl)</span><span class="popup-val">${bar.beer}</span></div>` : ''}
-      <div class="popup-row"><span class="popup-label">Öppettider</span><span class="popup-val">${bar.hours}</span></div>
+      <div class="popup-row"><span class="popup-label">${t('status')}</span>${openHtml}</div>
+      <div class="popup-row"><span class="popup-label">${t('boardsLabel')}</span><span class="popup-val">${bar.boards} st (${bar.type})</span></div>
+      <div class="popup-row"><span class="popup-label">${t('price')}</span><span class="popup-val yellow">${bar.price}${bar.priceType ? ` (${bar.priceType === 'bana' ? t('perLane') : t('perPerson')})` : ''}</span></div>
+      ${bar.beer ? `<div class="popup-row"><span class="popup-label">${t('beerLabel')}</span><span class="popup-val">${bar.beer}</span></div>` : ''}
+      <div class="popup-row"><span class="popup-label">${t('hoursLabel')}</span><span class="popup-val">${bar.hours}</span></div>
       ${bar.note ? `<div style="margin-top:8px;font-size:0.78rem;color:var(--muted);font-style:italic">${bar.note}</div>` : ''}
       <a href="https://www.google.com/maps/dir/?api=1&destination=${bar.lat},${bar.lng}" target="_blank" rel="noopener"
         style="display:inline-flex;align-items:center;gap:4px;margin-top:10px;padding:6px 12px;background:rgba(232,255,71,0.12);border:1px solid rgba(232,255,71,0.3);border-radius:6px;color:var(--accent);font-size:0.78rem;font-weight:600;text-decoration:none;transition:background 0.2s"
         onmouseover="this.style.background='rgba(232,255,71,0.2)'" onmouseout="this.style.background='rgba(232,255,71,0.12)'">
-        📍 Vägbeskrivning
+        📍 ${t('directions')}
       </a>
-      <button class="btn-edit-popup" onclick="openEditModal(${bar.id})">✏️ Föreslå ändring</button>
+      <button class="btn-edit-popup" onclick="openEditModal(${bar.id})">✏️ ${t('suggestEdit')}</button>
       ${(() => {
         const barClubs = clubs.filter(c => c.barId === bar.id);
         if (barClubs.length === 0) return '';
         return `<div class="club-section">
-          <div class="club-section-title">🏆 Klubbar som spelar här</div>
+          <div class="club-section-title">🏆 ${t('clubsPlayHere')}</div>
           ${barClubs.map(c => `<div class="club-entry">
             <strong>${c.name}</strong><br>
-            ${c.boards ? `<span>🎯 ${c.boards} tavlor</span><br>` : ''}<span>📅 ${c.day} ${c.time}</span>${c.price ? ` · <span>💰 ${c.price}</span>` : ''}
+            ${c.boards ? `<span>🎯 ${c.boards} ${t('boards')}</span><br>` : ''}<span>📅 ${c.day} ${c.time}</span>${c.price ? ` · <span>💰 ${c.price}</span>` : ''}
             ${c.note ? `<br><span style="font-style:italic">${c.note}</span>` : ''}
             ${c.social ? `<br><a href="${c.social.startsWith('http') ? c.social : 'https://' + c.social}" target="_blank" style="color:#4ade80;font-size:0.75rem;text-decoration:none">📱 ${c.social}</a>` : ''}
             ${c.web ? `<br><a href="${c.web.startsWith('http') ? c.web : 'https://' + c.web}" target="_blank" style="color:var(--accent);font-size:0.75rem;text-decoration:none">🌐 ${c.web}</a>` : ''}
             ${c.phone ? `<br><span style="color:var(--muted);font-size:0.75rem">📞 ${c.phone}</span>` : ''}
-            <br><button class="btn-edit-popup" onclick="openEditClubModal(${c.id})" style="margin-top:4px">✏️ Föreslå ändring</button>
+            <br><button class="btn-edit-popup" onclick="openEditClubModal(${c.id})" style="margin-top:4px">✏️ ${t('suggestEdit')}</button>
           </div>`).join('')}
         </div>`;
       })()}
-      <div style="margin-top:10px;font-size:0.65rem;color:var(--muted);opacity:0.6">Vi reserverar oss för eventuella felaktigheter i uppgifterna. Kontakta stället för att bekräfta priser och öppettider.</div>
+      <div style="margin-top:10px;font-size:0.65rem;color:var(--muted);opacity:0.6">${t('disclaimer')}</div>
     </div>
   `;
 }
@@ -2360,19 +2644,19 @@ function buildClubPopup(club) {
     <div class="popup-inner">
       <div class="popup-name" style="color:#4ade80">🏆 ${club.name}</div>
       <div class="popup-city">📍 ${club.city}</div>
-      ${linkedBar ? `<div class="popup-row"><span class="popup-label">Spelar på</span><span class="popup-val">${linkedBar.name}</span></div>` : ''}
-      ${club.boards ? `<div class="popup-row"><span class="popup-label">Tavlor</span><span class="popup-val">${club.boards} st</span></div>` : ''}
-      <div class="popup-row"><span class="popup-label">Dag</span><span class="popup-val">${club.day}</span></div>
-      <div class="popup-row"><span class="popup-label">Tid</span><span class="popup-val">${club.time}</span></div>
-      ${club.price ? `<div class="popup-row"><span class="popup-label">Pris</span><span class="popup-val yellow">${club.price}</span></div>` : ''}
+      ${linkedBar ? `<div class="popup-row"><span class="popup-label">${t('playsAt')}</span><span class="popup-val">${linkedBar.name}</span></div>` : ''}
+      ${club.boards ? `<div class="popup-row"><span class="popup-label">${t('boardsLabel')}</span><span class="popup-val">${club.boards} st</span></div>` : ''}
+      <div class="popup-row"><span class="popup-label">${t('day')}</span><span class="popup-val">${club.day}</span></div>
+      <div class="popup-row"><span class="popup-label">${t('time')}</span><span class="popup-val">${club.time}</span></div>
+      ${club.price ? `<div class="popup-row"><span class="popup-label">${t('price')}</span><span class="popup-val yellow">${club.price}</span></div>` : ''}
       ${club.note ? `<div style="margin-top:8px;font-size:0.78rem;color:var(--muted);font-style:italic">${club.note}</div>` : ''}
       ${(club.social || club.web || club.phone) ? `<div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;font-size:0.78rem">
         ${club.social ? `<a href="${club.social.startsWith('http') ? club.social : 'https://' + club.social}" target="_blank" style="color:#4ade80;text-decoration:none">📱 ${club.social}</a>` : ''}
         ${club.web ? `<a href="${club.web.startsWith('http') ? club.web : 'https://' + club.web}" target="_blank" style="color:var(--accent);text-decoration:none">🌐 ${club.web}</a>` : ''}
         ${club.phone ? `<a href="tel:${club.phone.replace(/\s/g,'')}" style="color:var(--muted);text-decoration:none">📞 ${club.phone}</a>` : ''}
       </div>` : ''}
-      <button class="btn-edit-popup" onclick="openEditClubModal(${club.id})">✏️ Föreslå ändring</button>
-      <div style="margin-top:10px;font-size:0.65rem;color:var(--muted);opacity:0.6">Vi reserverar oss för eventuella felaktigheter i uppgifterna.</div>
+      <button class="btn-edit-popup" onclick="openEditClubModal(${club.id})">✏️ ${t('suggestEdit')}</button>
+      <div style="margin-top:10px;font-size:0.65rem;color:var(--muted);opacity:0.6">${t('disclaimerShort')}</div>
     </div>
   `;
 }
@@ -2416,14 +2700,14 @@ function submitEdit() {
       document.querySelector('.edit-modal-box').innerHTML = `
         <div style="text-align:center;padding:2rem 0">
           <div style="font-size:2rem;margin-bottom:8px">✅</div>
-          <h3 style="color:var(--text)">Tack!</h3>
-          <p style="color:var(--muted);font-size:0.85rem">Ditt ändringsförslag har skickats.</p>
-          <button class="edit-modal-submit" onclick="closeEditModal()" style="margin-top:16px">Stäng</button>
+          <h3 style="color:var(--text)">${t('thankYou')}</h3>
+          <p style="color:var(--muted);font-size:0.85rem">${t('editReceived')}</p>
+          <button class="edit-modal-submit" onclick="closeEditModal()" style="margin-top:16px">${t('close')}</button>
         </div>`;
     } else {
-      alert('Något gick fel. Försök igen!');
+      alert(t('somethingWrong'));
     }
-  }).catch(() => alert('Kunde inte skicka. Kolla din internetanslutning.'));
+  }).catch(() => alert(t('somethingWrong')));
 }
 
 // ──────────────────────────────────────────
@@ -2465,12 +2749,12 @@ function submitEditClub() {
       document.querySelector('#editClubModal .edit-modal-box').innerHTML = `
         <div style="text-align:center;padding:2rem 0">
           <div style="font-size:2rem;margin-bottom:8px">✅</div>
-          <h3 style="color:var(--text)">Tack!</h3>
-          <p style="color:var(--muted);font-size:0.85rem">Ditt ändringsförslag har skickats.</p>
-          <button class="edit-modal-submit" onclick="closeEditClubModal()" style="margin-top:16px">Stäng</button>
+          <h3 style="color:var(--text)">${t('thankYou')}</h3>
+          <p style="color:var(--muted);font-size:0.85rem">${t('editReceived')}</p>
+          <button class="edit-modal-submit" onclick="closeEditClubModal()" style="margin-top:16px">${t('close')}</button>
         </div>`;
     } else {
-      alert('Något gick fel. Försök igen!');
+      alert(t('somethingWrong'));
     }
   });
 }
@@ -2481,10 +2765,10 @@ function submitEditClub() {
 function renderList(data) {
   const list = document.getElementById('barList');
   const label = document.getElementById('resultsLabel');
-  label.textContent = `Visar ${data.length} av ${bars.length} barer`;
+  label.textContent = t('showingBars')(data.length, bars.length);
 
   if (data.length === 0) {
-    list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:2rem;font-size:0.9rem">Inga barer matchar sökningen 🎯</div>`;
+    list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:2rem;font-size:0.9rem">${t('noMatchBars')}</div>`;
     return;
   }
 
@@ -2497,8 +2781,8 @@ function renderList(data) {
       <div class="bar-city">📍 ${bar.city}</div>
       <div class="bar-meta">
         <span class="badge price">💰 ${bar.price}</span>
-        <span class="badge boards">🎯 ${bar.boards} tavlor</span>
-        <span class="badge ${op ? 'open' : 'closed'}">${op ? '● Öppet' : '● Stängt'}</span>
+        <span class="badge boards">🎯 ${bar.boards} ${t('boards')}</span>
+        <span class="badge ${op ? 'open' : 'closed'}">${op ? '● ' + t('openLabel') : '● ' + t('closed')}</span>
       </div>
     </div>`;
   }).join('');
@@ -2534,10 +2818,10 @@ function renderClubList() {
   if (q) filtered = filtered.filter(c => c.name.toLowerCase().includes(q) || c.city.toLowerCase().includes(q));
   if (activeCity !== 'alla') filtered = filtered.filter(c => c.city === activeCity);
 
-  label.textContent = `Visar ${filtered.length} av ${clubs.length} klubbar`;
+  label.textContent = t('showingClubs')(filtered.length, clubs.length);
 
   if (filtered.length === 0) {
-    list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:2rem;font-size:0.9rem">Inga klubbar matchar sökningen 🏆</div>`;
+    list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:2rem;font-size:0.9rem">${t('noMatchClubs')}</div>`;
     return;
   }
 
@@ -2548,7 +2832,7 @@ function renderClubList() {
         <div class="bar-name" style="color:#4ade80">🏆 ${club.name}</div>
         <div class="bar-city">📍 ${club.city}${linkedBar ? ` · ${linkedBar.name}` : ''}</div>
         <div class="bar-meta">
-          ${club.boards ? `<span class="badge boards">🎯 ${club.boards} tavlor</span>` : ''}
+          ${club.boards ? `<span class="badge boards">🎯 ${club.boards} ${t('boards')}</span>` : ''}
           <span class="badge boards">📅 ${club.day} ${club.time}</span>
           ${club.price ? `<span class="badge price">💰 ${club.price}</span>` : ''}
         </div>
@@ -2799,7 +3083,7 @@ function submitClub(e) {
       dagar.push(t ? cb.value + ' ' + t : cb.value);
     }
   });
-  if (dagar.length === 0) { alert('Välj minst en speldag!'); return false; }
+  if (dagar.length === 0) { alert(t('selectDay')); return false; }
   const social = document.getElementById('formClubSocial').value.trim();
   const web = document.getElementById('formClubWeb').value.trim();
   const phone = document.getElementById('formClubPhone').value.trim();
@@ -2822,11 +3106,11 @@ function submitClub(e) {
       document.getElementById('clubForm').innerHTML = `
         <div style="text-align:center;padding:2rem 0">
           <div style="font-size:2.5rem;margin-bottom:0.5rem">🏆</div>
-          <h3 style="color:var(--text)">Tack!</h3>
-          <p style="color:var(--muted);font-size:0.85rem">Din klubb granskas och läggs till inom kort.</p>
+          <h3 style="color:var(--text)">${t('thankYou')}</h3>
+          <p style="color:var(--muted);font-size:0.85rem">${t('editReceived')}</p>
         </div>`;
     } else {
-      alert('Något gick fel. Försök igen!');
+      alert(t('somethingWrong'));
     }
   });
   return false;
@@ -2837,7 +3121,7 @@ function submitBar(e) {
   const form = document.getElementById('barForm');
   const name = document.getElementById('formName').value.trim();
   const city = document.getElementById('formCity').value.trim();
-  if (!name || !city) { alert('Fyll i namn och stad!'); return false; }
+  if (!name || !city) { alert(currentLang === 'en' ? 'Please fill in name and city!' : 'Fyll i namn och stad!'); return false; }
 
   // Skicka via Formspree
   const data = Object.fromEntries(new FormData(form));
@@ -2847,10 +3131,10 @@ function submitBar(e) {
     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify(data)
   }).then(r => {
-    if (r.ok) alert(`Tack! "${name}" i ${city} har skickats in för granskning. 🎯\n\nVi lägger till den på kartan så snart den är verifierad.`);
-    else alert(`Tack! "${name}" i ${city} har registrerats. 🎯`);
+    if (r.ok) alert(currentLang === 'en' ? `Thanks! "${name}" in ${city} has been submitted for review. 🎯` : `Tack! "${name}" i ${city} har skickats in för granskning. 🎯\n\nVi lägger till den på kartan så snart den är verifierad.`);
+    else alert(currentLang === 'en' ? `Thanks! "${name}" in ${city} has been registered. 🎯` : `Tack! "${name}" i ${city} har registrerats. 🎯`);
   }).catch(() => {
-    alert(`Något gick fel. Försök igen!`);
+    alert(t('somethingWrong'));
   });
 
   closeModal();
@@ -2868,6 +3152,7 @@ window.addEventListener('load', () => {
   renderList(bars);
   initMobileToggle();
   initZoomLock();
+  if (currentLang !== 'sv') setLang(currentLang);
 });
 
 // ── BLOCK ZOOM OUTSIDE MAP ──
