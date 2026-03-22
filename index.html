@@ -15,23 +15,24 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>Dartkartan – Hitta dartbarer nära dig | 60+ ställen i Sverige</title>
-  <meta name="description" content="Var kan man kasta dart? Dartkartan visar 60+ barer med darttavlor i Göteborg, Malmö, Stockholm, Uppsala och fler städer. Priser, öppettider, ölpriser och inbyggd dartscorer." />
+  <title>Dartkartan – Hitta dartbarer och dartklubbar i Sverige | Spela dart nära dig</title>
+  <meta name="description" content="Sveriges största karta över dartbarer och dartklubbar. 68+ barer i 36 städer — Stockholm, Göteborg, Malmö, Uppsala m.fl. Se priser, öppettider, taveltyp och hitta var du kan spela dart nära dig. Gratis dartscorer ingår." />
+  <meta name="keywords" content="dart, dartbar, dartklubb, spela dart, dart stockholm, dart göteborg, dart malmö, dartbarer sverige, darttavla, bristoltavla, dart nära mig, kasta dart, dart bar, dart pub, dart scorer" />
   <meta name="author" content="Dartkartan.se" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://dartkartan.se/" />
 
   <!-- Open Graph (Facebook, Discord m.m.) -->
-  <meta property="og:title" content="Dartkartan – Hitta barer med darttavlor i Sverige" />
-  <meta property="og:description" content="Interaktiv karta över 60+ dartbarer i Sverige. Priser, öppettider, ölpriser och inbyggd scorer." />
+  <meta property="og:title" content="Dartkartan – Hitta dartbarer och dartklubbar i Sverige" />
+  <meta property="og:description" content="Sveriges största karta över dartbarer och dartklubbar. 68+ ställen i 36 städer. Hitta var du kan spela dart nära dig!" />
   <meta property="og:url" content="https://dartkartan.se/" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="sv_SE" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Dartkartan – Hitta barer med darttavlor i Sverige" />
-  <meta name="twitter:description" content="60+ dartbarer i Sverige. Priser, öppettider och inbyggd scorer." />
+  <meta name="twitter:title" content="Dartkartan – Hitta dartbarer och dartklubbar i Sverige" />
+  <meta name="twitter:description" content="68+ dartbarer och dartklubbar i 36 städer. Hitta var du kan spela dart nära dig!" />
 
   <!-- Strukturerad data för Google -->
   <script type="application/ld+json">
@@ -40,7 +41,7 @@
     "@type": "WebSite",
     "name": "Dartkartan",
     "url": "https://dartkartan.se/",
-    "description": "Interaktiv karta över barer med darttavlor i Sverige. Hitta dartbarer nära dig med priser, öppettider och ölpriser.",
+    "description": "Sveriges största karta över dartbarer och dartklubbar. 68+ ställen i 36 städer. Hitta var du kan spela dart nära dig med priser, öppettider och taveltyp.",
     "inLanguage": "sv",
     "potentialAction": {
       "@type": "SearchAction",
@@ -984,6 +985,24 @@
   </style>
 </head>
 <body>
+
+<!-- SEO: Crawlbar text för Google (dold visuellt men indexerbar) -->
+<div style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+  <h1>Dartkartan – Hitta dartbarer och dartklubbar i Sverige</h1>
+  <p>Dartkartan.se är Sveriges största interaktiva karta för att hitta dartbarer och dartklubbar. Vi listar 68+ ställen i 36 städer där du kan spela dart — från Malmö i söder till Umeå i norr.</p>
+  <h2>Spela dart i Stockholm</h2>
+  <p>Stockholm har ett växande dartutbud med barer som Oilers DC i Gamla Stan, Söderbiljarden på Södermalm, Biljardpalatset på Kungsholmen, Mini Dart, The Ship och Roq. Hitta din dartbar i Stockholm.</p>
+  <h2>Spela dart i Göteborg</h2>
+  <p>Göteborg erbjuder många dartbarer — Haket, John Scott's Avenyn, Hard Rock Cafe, Grace Avenyn, Majorna Bowling, Opalen Krog, Bollywood, Ånesgrillen och fler. Hitta din dartbar i Göteborg.</p>
+  <h2>Spela dart i Malmö</h2>
+  <p>I Malmö hittar du dartbarer som Fagans, Interpool, Pickwick, Royal Pool Hall och Gamle Nobes. Hitta din dartbar i Malmö.</p>
+  <h2>Dart i fler svenska städer</h2>
+  <p>Dartkartan täcker även Uppsala, Halmstad, Borlänge, Helsingborg, Norrköping, Örebro, Eskilstuna, Karlstad, Borås, Södertälje, Trollhättan, Uddevalla, Umeå, Östersund, Falköping, Solna, Kungsbacka och många fler.</p>
+  <h2>Gratis dartscorer online</h2>
+  <p>Dartkartan har en inbyggd dartscorer med checkout-förslag, per-dart-input, lag-spel och statistik. Perfekt för 301, 501 och 701.</p>
+  <h2>Hitta dartklubbar i Sverige</h2>
+  <p>Vi listar även dartklubbar som Kungsbacka Dartklubb, Borlänge Dart Club, Darts Club Gothenburg och fler. Hitta en dartklubb nära dig.</p>
+</div>
 
 <header>
   <a href="/" class="logo" style="text-decoration:none;color:inherit;cursor:pointer" onclick="map.setView([56.9,12.8],7);closeMobileSidebar();map.closePopup();return false;">
@@ -3169,7 +3188,38 @@ window.addEventListener('load', () => {
   initMobileToggle();
   initZoomLock();
   if (currentLang !== 'sv') setLang(currentLang);
+  generateSEOSchema();
 });
+
+function generateSEOSchema() {
+  const schema = bars.map(b => ({
+    "@context": "https://schema.org",
+    "@type": "BarOrPub",
+    "name": b.name,
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": b.address.split(',')[0],
+      "addressLocality": b.city,
+      "addressCountry": "SE"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": b.lat,
+      "longitude": b.lng
+    },
+    "url": "https://dartkartan.se/",
+    "description": (b.boards||'') + " darttavlor" + (b.type ? " (" + b.type + ")" : "") + (b.price ? ". " + b.price : ""),
+    "amenityFeature": {
+      "@type": "LocationFeatureSpecification",
+      "name": "Dart",
+      "value": true
+    }
+  }));
+  const el = document.createElement('script');
+  el.type = 'application/ld+json';
+  el.textContent = JSON.stringify(schema);
+  document.head.appendChild(el);
+}
 
 // ── BLOCK ZOOM OUTSIDE MAP ──
 function initZoomLock() {
