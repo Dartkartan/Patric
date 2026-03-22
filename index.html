@@ -1003,7 +1003,7 @@
   <div class="header-right">
     <button class="btn-add" onclick="openScorer()" style="background:var(--surface2);color:var(--accent);border:1px solid var(--accent);margin-right:0.5rem">🎯 <span data-i18n="scorer">Scorer</span></button>
     <button class="btn-add" onclick="openModal()" data-i18n="addNew">+ Lägg till</button>
-    <button class="btn-add" id="langToggle" onclick="setLang(currentLang==='sv'?'en':'sv')" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);padding:0.4rem 0.6rem;font-size:1.1rem;min-width:auto" title="Switch language">🇬🇧</button>
+    <button class="btn-add" id="langToggle" onclick="setLang(currentLang==='sv'?'en':'sv')" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);padding:0.3rem 0.5rem;min-width:auto;line-height:1" title="Switch language"><svg id="langFlag" width="24" height="16" viewBox="0 0 60 40" style="display:block"><rect width="60" height="40" fill="#012169"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" stroke-width="4"/><path d="M30,0 V40 M0,20 H60" stroke="#fff" stroke-width="10"/><path d="M30,0 V40 M0,20 H60" stroke="#C8102E" stroke-width="6"/></svg></button>
   </div>
 </header>
 
@@ -1775,9 +1775,17 @@ function setLang(lang) {
   // Update mobile toggle
   const mob = document.getElementById('mobileBarToggle');
   if (mob) mob.textContent = t('mobileToggle');
-  // Update lang button
-  const btn = document.getElementById('langToggle');
-  if (btn) btn.textContent = currentLang === 'sv' ? '🇬🇧' : '🇸🇪';
+  // Update lang button (SVG flags)
+  const flag = document.getElementById('langFlag');
+  if (flag) {
+    if (currentLang === 'sv') {
+      // Show UK flag (click to switch to English)
+      flag.innerHTML = '<rect width="60" height="40" fill="#012169"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" stroke-width="4"/><path d="M30,0 V40 M0,20 H60" stroke="#fff" stroke-width="10"/><path d="M30,0 V40 M0,20 H60" stroke="#C8102E" stroke-width="6"/>';
+    } else {
+      // Show Swedish flag (click to switch to Swedish)
+      flag.innerHTML = '<rect width="60" height="40" fill="#006AA7"/><rect x="18" width="8" height="40" fill="#FECC02"/><rect y="16" width="60" height="8" fill="#FECC02"/>';
+    }
+  }
 }
 
 // ──────────────────────────────────────────
