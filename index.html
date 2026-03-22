@@ -1101,6 +1101,8 @@
         <div class="filter-chip city-chip" onclick="setCity('Katrineholm', this)">Katrineholm</div>
         <div class="filter-chip city-chip" onclick="setCity('Ekerö', this)">Ekerö</div>
         <div class="filter-chip city-chip" onclick="setCity('Vänersborg', this)">Vänersborg</div>
+        <div class="filter-chip city-chip" onclick="setCity('Sundbyberg', this)">Sundbyberg</div>
+        <div class="filter-chip city-chip" onclick="setCity('Täby', this)">Täby</div>
       </div>
     </div>
     <div class="list-toggle">
@@ -2082,7 +2084,7 @@ const bars = [
     address:"Bankgatan 1, Tranås", boards:2, price:"Kontakta stället",
     type:"Bristoltavla", hours:"Kontakta stället",
     open:true, verified:false, beer:"59 kr",
-    note:"2 bristoltavlor."
+    note:"2 bristoltavlor. Tranås Dartklubb spelar här varje torsdag 18\u201323."
   },
   // ── EKSJÖ ──
   {
@@ -2323,8 +2325,8 @@ const bars = [
   {
     id:69, name:"STURES Krog", city:"Lidköping",
     lat:58.5029, lng:13.1623,
-    address:"Gamla Stadens Torg 5, Lidköping", boards:9, price:"Cirka 200 kr/timme", priceType:"bana",
-    type:"Bristoltavla", hours:"Alla dagar till sent, fre & lör till 02:00",
+    address:"Gamla Stadens Torg 5, Lidköping", boards:9, price:"150 kr/h", priceType:"bana",
+    type:"Bristoltavla", hours:"Alla dagar till sent, Fre\u2013Lör till 02:00",
     open:true, verified:false, beer:"69 kr",
     note:"9 bristoltavlor."
   },
@@ -2366,11 +2368,11 @@ const bars = [
   // ── STOCKHOLM (Gamla Stan) ──
   {
     id:74, name:"Oilers DC", city:"Stockholm",
-    lat:59.3252, lng:18.0702,
-    address:"Trångsund 9, Gamla Stan, Stockholm", boards:8, price:"100 kr", priceType:"person",
+    lat:59.2279, lng:18.1315,
+    address:"Trångsundstorg 9, Trångsund", boards:8, price:"100 kr", priceType:"person",
     type:"Bristoltavla", hours:"Fre 18\u201302, Sön 13\u201319",
     open:true, verified:false, beer:"40 kr/50cl",
-    note:"Dartklubb. Cupanmälan."
+    note:"Dartklubb i Trångsund (Huddinge). Cupanmälan."
   },
   // ── SOLNA ──
   {
@@ -2767,6 +2769,42 @@ const bars = [
     open:true, verified:false, beer:"",
     note:"3 darttavlor. 2\u20136 spelare per tavla."
   },
+  // ── UMEÅ (fler) ──
+  {
+    id:123, name:"Mias Grill & Bar", city:"Umeå",
+    lat:63.8292, lng:20.2676,
+    address:"Järnvägstorget, Umeå", boards:4, price:"", priceType:"bana",
+    type:"Bristoltavla", hours:"",
+    open:true, verified:false, beer:"",
+    note:"4 bristoltavlor."
+  },
+  // ── SUNDBYBERG ──
+  {
+    id:124, name:"Restaurang Brunnsbacken", city:"Sundbyberg",
+    lat:59.3637, lng:17.9684,
+    address:"Brunnsgatan 7, Sundbyberg", boards:5, price:"", priceType:"bana",
+    type:"Bristoltavla", hours:"15\u201300",
+    open:true, verified:false, beer:"60 kr",
+    note:"5 bristoltavlor. Gratis spel."
+  },
+  // ── STOCKHOLM (fler) ──
+  {
+    id:125, name:"Lagerbaren", city:"Stockholm",
+    lat:59.3082, lng:18.0766,
+    address:"Götgatan 97, Stockholm", boards:3, price:"", priceType:"bana",
+    type:"Bristoltavla", hours:"Mån\u2013Sön 11\u201301",
+    open:true, verified:false, beer:"66 kr",
+    note:"3 bristoltavlor. Gratis spel."
+  },
+  // ── TÄBY ──
+  {
+    id:126, name:"Ellinors Kök & Bar", city:"Täby",
+    lat:59.4503, lng:18.1203,
+    address:"Radarvägen 5, 183 61 Täby", boards:6, price:"", priceType:"bana",
+    type:"Bristoltavla", hours:"Mån\u2013Tor 16\u201323, Fre 16\u201301, Lör 12\u201301, Sön 12\u201323",
+    open:true, verified:false, beer:"",
+    note:"6 bristoltavlor. Gratis spel."
+  },
 
 ];
 
@@ -2838,6 +2876,12 @@ const clubs = [
     barId:null, lat:58.4123, lng:15.6256, boards:0,
     day:"Onsdag", time:"18:00", price:"",
     social:"https://www.facebook.com/ldk.dart/", web:"https://sites.google.com/view/linkpings-dartklubb/", phone:"", note:"Badhusgatan, Linköping. Grundad 1979. Spelar i Riksserien."
+  },
+  {
+    id:12, name:"Umeå Dart Club", city:"Umeå",
+    barId:null, lat:63.8292, lng:20.2676, boards:4,
+    day:"Tisdag & Lördag", time:"16:00\u201322:00", price:"300 kr/år",
+    social:"https://www.facebook.com/umeadartclub", web:"", phone:"", note:"Järnvägstorget, Umeå. Medlemskap 300 kr/år."
   },
 ];
 
@@ -3341,6 +3385,8 @@ function setCity(city, el) {
     'Katrineholm': [[58.997, 16.209], 13],
     'Ekerö': [[59.275, 17.848], 13],
     'Vänersborg': [[58.380, 12.324], 13],
+    'Sundbyberg': [[59.364, 17.968], 13],
+    'Täby': [[59.450, 18.120], 13],
   };
   const cc = cityCoords[city];
   if (cc) map.flyTo(cc[0], cc[1], {duration:1});
