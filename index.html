@@ -16,7 +16,7 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>Dartkartan – Hitta dartbarer och dartklubbar i Sverige | Spela dart nära dig</title>
-  <meta name="description" content="Sveriges största karta över dartbarer och dartklubbar. 95+ barer i 47 städer — Stockholm, Göteborg, Malmö, Uppsala m.fl. Se priser, öppettider, taveltyp och hitta var du kan spela dart nära dig. Gratis dartscorer ingår." />
+  <meta name="description" content="Sveriges största karta över dartbarer och dartklubbar. 110+ barer i 52 städer — Stockholm, Göteborg, Malmö, Uppsala m.fl. Se priser, öppettider, taveltyp och hitta var du kan spela dart nära dig. Gratis dartscorer ingår." />
   <meta name="keywords" content="dart, dartbar, dartklubb, spela dart, dart stockholm, dart göteborg, dart malmö, dartbarer sverige, darttavla, bristoltavla, dart nära mig, kasta dart, dart bar, dart pub, dart scorer" />
   <meta name="author" content="Dartkartan.se" />
   <meta name="robots" content="index, follow" />
@@ -24,7 +24,7 @@
 
   <!-- Open Graph (Facebook, Discord m.m.) -->
   <meta property="og:title" content="Dartkartan – Hitta dartbarer och dartklubbar i Sverige" />
-  <meta property="og:description" content="Sveriges största karta över dartbarer och dartklubbar. 68+ ställen i 47 städer. Hitta var du kan spela dart nära dig!" />
+  <meta property="og:description" content="Sveriges största karta över dartbarer och dartklubbar. 68+ ställen i 52 städer. Hitta var du kan spela dart nära dig!" />
   <meta property="og:url" content="https://dartkartan.se/" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="sv_SE" />
@@ -32,7 +32,7 @@
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Dartkartan – Hitta dartbarer och dartklubbar i Sverige" />
-  <meta name="twitter:description" content="68+ dartbarer och dartklubbar i 47 städer. Hitta var du kan spela dart nära dig!" />
+  <meta name="twitter:description" content="68+ dartbarer och dartklubbar i 52 städer. Hitta var du kan spela dart nära dig!" />
 
   <!-- Strukturerad data för Google -->
   <script type="application/ld+json">
@@ -41,7 +41,7 @@
     "@type": "WebSite",
     "name": "Dartkartan",
     "url": "https://dartkartan.se/",
-    "description": "Sveriges största karta över dartbarer och dartklubbar. 68+ ställen i 47 städer. Hitta var du kan spela dart nära dig med priser, öppettider och taveltyp.",
+    "description": "Sveriges största karta över dartbarer och dartklubbar. 68+ ställen i 52 städer. Hitta var du kan spela dart nära dig med priser, öppettider och taveltyp.",
     "inLanguage": "sv",
     "potentialAction": {
       "@type": "SearchAction",
@@ -989,7 +989,7 @@
 <!-- SEO: Crawlbar text för Google (dold visuellt men indexerbar) -->
 <div style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
   <h1>Dartkartan – Hitta dartbarer och dartklubbar i Sverige</h1>
-  <p>Dartkartan.se är Sveriges största interaktiva karta för att hitta dartbarer och dartklubbar. Vi listar 68+ ställen i 47 städer där du kan spela dart — från Malmö i söder till Umeå i norr.</p>
+  <p>Dartkartan.se är Sveriges största interaktiva karta för att hitta dartbarer och dartklubbar. Vi listar 68+ ställen i 52 städer där du kan spela dart — från Malmö i söder till Umeå i norr.</p>
   <h2>Spela dart i Stockholm</h2>
   <p>Stockholm har ett växande dartutbud med barer som Oilers DC i Gamla Stan, Söderbiljarden på Södermalm, Biljardpalatset på Kungsholmen, Mini Dart, The Ship och Roq. Hitta din dartbar i Stockholm.</p>
   <h2>Spela dart i Göteborg</h2>
@@ -1095,6 +1095,12 @@
         <div class="filter-chip city-chip" onclick="setCity('Sundsvall', this)">Sundsvall</div>
         <div class="filter-chip city-chip" onclick="setCity('Karlskrona', this)">Karlskrona</div>
         <div class="filter-chip city-chip" onclick="setCity('Nyköping', this)">Nyköping</div>
+        <div class="filter-chip city-chip" onclick="setCity('Ystad', this)">Ystad</div>
+        <div class="filter-chip city-chip" onclick="setCity('Köping', this)">Köping</div>
+        <div class="filter-chip city-chip" onclick="setCity('Piteå', this)">Piteå</div>
+        <div class="filter-chip city-chip" onclick="setCity('Katrineholm', this)">Katrineholm</div>
+        <div class="filter-chip city-chip" onclick="setCity('Ekerö', this)">Ekerö</div>
+        <div class="filter-chip city-chip" onclick="setCity('Vänersborg', this)">Vänersborg</div>
       </div>
     </div>
     <div class="list-toggle">
@@ -2461,12 +2467,12 @@ const bars = [
     note:"Irländsk pub i Gamla Stan. Dartrum i 400 år gamla källarvalv."
   },
   {
-    id:86, name:"La Botanica", city:"Solna",
+    id:86, name:"O'Learys Mall of Scandinavia", city:"Solna",
     lat:59.3703, lng:18.0034,
     address:"Stjärntorget 2, 169 79 Solna", boards:0, price:"250 kr/45 min", priceType:"bana",
     type:"Elektronisk", hours:"",
     open:true, verified:false, beer:"",
-    note:"AR-dart i Mall of Scandinavia. Upp till 8 spelare/session."
+    note:"Interaktiv AR-dart. Upp till 8 spelare/session. Världens största O'Learys (6000 m²). 18+."
   },
   // ── GÖTEBORG (fler) ──
   {
@@ -2606,15 +2612,6 @@ const bars = [
     open:true, verified:false, beer:"",
     note:"Tävlingstavlor. 60 kr/30 min. Sedan 1998."
   },
-  // ── SUNDSVALL ──
-  {
-    id:103, name:"O'Learys Sundsvall", city:"Sundsvall",
-    lat:62.3917, lng:17.3032,
-    address:"Storgatan 40, 852 30 Sundsvall", boards:2, price:"50 kr/tavla", priceType:"bana",
-    type:"Bristoltavla", hours:"Tis\u2013Tor 17\u201323, Fre 17\u201301, Lör 14\u201301, Sön 17\u201300, Mån Stängt",
-    open:true, verified:false, beer:"",
-    note:"2 darttavlor. Billigaste O'Learys-darten!"
-  },
   // ── KARLSKRONA ──
   {
     id:104, name:"Stars & Stripes Karlskrona", city:"Karlskrona",
@@ -2640,6 +2637,135 @@ const bars = [
     type:"Bristoltavla", hours:"Sön\u2013Tor 16\u201301, Fre\u2013Lör 16\u201302",
     open:true, verified:false, beer:"",
     note:"Bar med dart, shuffleboard och biljard."
+  },
+  // ── O'LEARYS-KEDJAN (fler) ──
+  {
+    id:107, name:"O'Learys Norrköping", city:"Norrköping",
+    lat:58.5876, lng:16.1910,
+    address:"Drottninggatan 60, 602 32 Norrköping", boards:0, price:"299 kr/tavla", priceType:"bana",
+    type:"Elektronisk", hours:"",
+    open:true, verified:false, beer:"",
+    note:"Interaktiv dart med projicerade spel."
+  },
+  {
+    id:108, name:"O'Learys Ystad", city:"Ystad",
+    lat:55.4334, lng:13.8343,
+    address:"Fridhemsgatan 27, 271 45 Ystad", boards:0, price:"299 kr/tavla", priceType:"bana",
+    type:"Elektronisk", hours:"",
+    open:true, verified:false, beer:"",
+    note:"Interaktiv dart."
+  },
+  {
+    id:109, name:"O'Learys Köping", city:"Köping",
+    lat:59.5115, lng:15.9907,
+    address:"Sveavägen 16, 731 32 Köping", boards:0, price:"150 kr/h", priceType:"bana",
+    type:"Bristoltavla", hours:"",
+    open:true, verified:false, beer:"",
+    note:""
+  },
+  {
+    id:110, name:"O'Learys Helsingborg", city:"Helsingborg",
+    lat:56.0471, lng:12.6931,
+    address:"Rådhustorget 10, 252 21 Helsingborg", boards:0, price:"100 kr/30 min", priceType:"bana",
+    type:"Bristoltavla", hours:"",
+    open:true, verified:false, beer:"",
+    note:"Helg 150 kr/30 min, 300 kr/h."
+  },
+  {
+    id:111, name:"O'Learys Piteå", city:"Piteå",
+    lat:65.3165, lng:21.4790,
+    address:"Uddmansgatan 4, 941 32 Piteå", boards:0, price:"", priceType:"bana",
+    type:"Bristoltavla", hours:"",
+    open:true, verified:false, beer:"",
+    note:""
+  },
+  {
+    id:112, name:"O'Learys Karlstad", city:"Karlstad",
+    lat:59.3802, lng:13.5040,
+    address:"Tingvallagatan 9, 652 25 Karlstad", boards:0, price:"45 kr/30 min", priceType:"bana",
+    type:"Bristoltavla", hours:"",
+    open:true, verified:false, beer:"",
+    note:"1\u20133 pers: 45/90 kr (30/60 min). 4\u20136 pers: 150/300 kr per tavla."
+  },
+  {
+    id:113, name:"O'Learys Sveaplan", city:"Stockholm",
+    lat:59.3497, lng:18.0489,
+    address:"Sveavägen 143, 113 46 Stockholm", boards:0, price:"250 kr/55 min", priceType:"bana",
+    type:"Elektronisk", hours:"",
+    open:true, verified:false, beer:"",
+    note:"Upp till 8 spelare. Ingen förbokning."
+  },
+  {
+    id:114, name:"O'Learys Ekerö", city:"Ekerö",
+    lat:59.2746, lng:17.8483,
+    address:"Bryggavägen 133A, 178 51 Ekerö", boards:0, price:"150 kr/h", priceType:"bana",
+    type:"Bristoltavla", hours:"",
+    open:true, verified:false, beer:"",
+    note:""
+  },
+  {
+    id:115, name:"O'Learys Hötorget", city:"Stockholm",
+    lat:59.3342, lng:18.0620,
+    address:"Slöjdgatan 11, 111 57 Stockholm", boards:0, price:"", priceType:"bana",
+    type:"Bristoltavla", hours:"",
+    open:true, verified:false, beer:"",
+    note:""
+  },
+  {
+    id:116, name:"O'Learys Katrineholm", city:"Katrineholm",
+    lat:58.9972, lng:16.2092,
+    address:"Storgatan 20, 641 45 Katrineholm", boards:0, price:"", priceType:"bana",
+    type:"Bristoltavla", hours:"",
+    open:true, verified:false, beer:"",
+    note:""
+  },
+  {
+    id:117, name:"O'Learys Sandviken", city:"Sandviken",
+    lat:60.6212, lng:16.7772,
+    address:"Smedsgatan 19, 811 39 Sandviken", boards:0, price:"", priceType:"bana",
+    type:"Bristoltavla", hours:"",
+    open:true, verified:false, beer:"",
+    note:""
+  },
+  {
+    id:118, name:"O'Learys Östermalm", city:"Stockholm",
+    lat:59.3347, lng:18.0859,
+    address:"Storgatan 27, 114 55 Stockholm", boards:0, price:"", priceType:"bana",
+    type:"Bristoltavla", hours:"",
+    open:true, verified:false, beer:"",
+    note:""
+  },
+  {
+    id:119, name:"O'Learys Vällingby", city:"Stockholm",
+    lat:59.3628, lng:17.8725,
+    address:"Vällingbyvägen 24, 162 65 Vällingby", boards:0, price:"99 kr/h", priceType:"bana",
+    type:"Bristoltavla", hours:"",
+    open:true, verified:false, beer:"",
+    note:"Billigaste O'Learys-darten i Stockholm!"
+  },
+  {
+    id:120, name:"O'Learys Vänersborg", city:"Vänersborg",
+    lat:58.3803, lng:12.3240,
+    address:"Kungsgatan 13, 462 33 Vänersborg", boards:0, price:"", priceType:"bana",
+    type:"Bristoltavla", hours:"",
+    open:true, verified:false, beer:"",
+    note:""
+  },
+  {
+    id:121, name:"O'Learys Borlänge", city:"Borlänge",
+    lat:60.4876, lng:15.4357,
+    address:"Borganäsvägen 48, 784 33 Borlänge", boards:0, price:"299 kr/tavla", priceType:"bana",
+    type:"Elektronisk", hours:"",
+    open:true, verified:false, beer:"",
+    note:"Interaktiv dart."
+  },
+  {
+    id:122, name:"O'Learys Malmö Entré", city:"Malmö",
+    lat:55.6074, lng:13.0253,
+    address:"Fredsgatan 12, 212 12 Malmö", boards:3, price:"150 kr/h", priceType:"bana",
+    type:"Bristoltavla", hours:"",
+    open:true, verified:false, beer:"",
+    note:"3 darttavlor. 2\u20136 spelare per tavla."
   },
 
 ];
@@ -3207,9 +3333,14 @@ function setCity(city, el) {
     'Växjö': [[56.879, 14.808], 13],
     'Kristianstad': [[56.031, 14.156], 13],
     'Kalmar': [[56.663, 16.348], 13],
-    'Sundsvall': [[62.392, 17.303], 13],
     'Karlskrona': [[56.162, 15.585], 13],
     'Nyköping': [[58.754, 17.014], 13],
+    'Ystad': [[55.433, 13.834], 13],
+    'Köping': [[59.512, 15.991], 13],
+    'Piteå': [[65.317, 21.479], 13],
+    'Katrineholm': [[58.997, 16.209], 13],
+    'Ekerö': [[59.275, 17.848], 13],
+    'Vänersborg': [[58.380, 12.324], 13],
   };
   const cc = cityCoords[city];
   if (cc) map.flyTo(cc[0], cc[1], {duration:1});
