@@ -2839,6 +2839,14 @@ const bars = [
     open:true, verified:false, beer:"",
     note:"2 bristoltavlor på nedervåningen. Gratis spel. Även bowling & shuffleboard."
   },
+  {
+    id:128, name:"Vimmerby Camping", city:"Vimmerby",
+    lat:57.6626, lng:15.8988,
+    address:"Nosshult 108, Vimmerby", boards:2, price:"", priceType:"gratis",
+    type:"Bristol Autoscoring", hours:"",
+    open:true, verified:false, beer:"65 kr",
+    note:"2 Bristol Autoscoring-tavlor. Gratis spel."
+  },
 
 ];
 
@@ -2934,6 +2942,12 @@ const clubs = [
     barId:126, lat:59.4503, lng:18.1203, boards:6,
     day:"Tisdag, Onsdag & Torsdag", time:"19:00", price:"200 kr/år",
     social:"https://www.facebook.com/groups/281189378625850/", web:"", phone:"", note:"Spelar på Ellinors Kök & Bar, Täby. Medlemskap 200 kr."
+  },
+  {
+    id:16, name:"Sirius Dart Club", city:"Uppsala",
+    barId:null, lat:59.8543, lng:17.6594, boards:10,
+    day:"Fredag", time:"18:00", price:"100 kr",
+    social:"https://www.facebook.com/groups/1025087597523228/", web:"", phone:"", note:"Säbygatan 23, Uppsala. 100 kr/gång."
   },
 ];
 
@@ -3441,6 +3455,7 @@ function setCity(city, el) {
     'Täby': [[59.450, 18.120], 13],
     'Bålsta': [[59.567, 17.527], 13],
     'Falun': [[60.601, 15.630], 13],
+    'Vimmerby': [[57.663, 15.899], 13],
   };
   const cc = cityCoords[city];
   if (cc) map.flyTo(cc[0], cc[1], {duration:1});
